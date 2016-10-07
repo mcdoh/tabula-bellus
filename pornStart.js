@@ -18,14 +18,22 @@ onReady(() => {
 	})
 	.then(json => {
 		if (json) {
-			let index = 1;
+			let index = 0;
 			let updateImage = function() {
-				if (index >= json.data.children.length) index = 1;
+				if (index >= json.data.children.length) index = 0;
 
-				let imageURL = json.data.children[index].data.preview.images[0].source.url;
-				body.style['backgroundImage'] = `url(${ imageURL })`;
+				let child = json.data.children[index]
 
-				index++;
+				if (child.data.is_self) {
+					index++;
+					updateImage();
+				}
+				else {
+					let imageURL = child.data.preview.images[0].source.url;
+					body.style['backgroundImage'] = `url(${ imageURL })`;
+
+					index++;
+				}
 			};
 
 			updateImage();
