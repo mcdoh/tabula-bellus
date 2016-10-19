@@ -1,0 +1,12 @@
+*~
+
+*.swp
+*.swo
+
+*.pyc
+*.pyo
+
+.DS_Store
+
+build
+node_modules
