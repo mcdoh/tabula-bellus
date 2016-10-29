@@ -83,7 +83,7 @@ class WatchPuppies extends React.Component {
 			if (index >= this.state.puppies.length) index = 0;
 
 			this.setState({index});
-		}, 5000);
+		}, 15000);
 	}
 
 	render () {
