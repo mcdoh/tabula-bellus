@@ -13,7 +13,7 @@ export default class Puppy extends React.Component {
 		this.state.thumbnail = new Image();
 		this.state.thumbnailLoaded = false;
 
-		this.loadImage();
+// 		this.loadImage();
 	}
 
 	getImageURL () {

@@ -2,6 +2,8 @@ import React from 'react';
 
 import Puppy from './puppy.jsx';
 
+const SECOND = 1000;
+
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
 }
@@ -71,7 +73,7 @@ class WatchPuppies extends React.Component {
 		.filter(child => child.post_hint === 'link' || child.post_hint === 'image');
 
 		console.log(puppies);
-// 		puppies = puppies.map(puppy => <Puppy data={puppy} />);
+		puppies = puppies.map(puppy => <Puppy data={puppy} />);
 		this.setState({puppies});
 	}
 
@@ -83,14 +85,20 @@ class WatchPuppies extends React.Component {
 			if (index >= this.state.puppies.length) index = 0;
 
 			this.setState({index});
-		}, 15000);
+		}, 60*SECOND);
 	}
 
 	render () {
 		console.log(this.state.index);
+		let puppy = this.state.puppies ? this.state.puppies[this.state.index] : null;
+
 		return (
-			this.state.puppies ? <Puppy data={this.state.puppies[this.state.index]} /> : null
+			<div>{puppy}</div>
 		);
+
+// 		return (
+// 			this.state.puppies ? <Puppy data={this.state.puppies[this.state.index]} /> : null
+// 		);
 	}
 }
 
