@@ -70,7 +70,7 @@ class WatchPuppies extends React.Component {
 
 		let puppies = data.data.children
 		.map(child => child.data)
-		.filter(child => child.post_hint === 'link' || child.post_hint === 'image');
+		.filter(child => child.post_hint === 'link' || child.post_hint === 'image' && !(child.is_self || child.locked || child.stickied));
 
 		console.log(puppies);
 		puppies = puppies.map(puppy => <Puppy data={puppy} />);
