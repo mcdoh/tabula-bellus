@@ -1,8 +1,10 @@
 import React from 'react';
 
 import Puppy from './puppy.jsx';
+import Runt from './runt.jsx';
 
 const ONE_SECOND = 1000;
+const UPDATE_INTERVAL = 30 * ONE_SECOND;
 
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
@@ -21,9 +23,10 @@ class WatchPuppies extends React.Component {
 	constructor (props) {
 		super(props);
 
-		this.state = {
-			index: rand(0,10)
-		};
+		this.state = {};
+
+		['updateIndex']
+		.map(method => this[method] = this[method].bind(this));
 
 		console.log('state', this.state);
 	}
@@ -38,7 +41,7 @@ class WatchPuppies extends React.Component {
 		})
 		.then(json => {
 			this.parseData(json);
-			this.startInterval();
+			this.timeout = setTimeout(this.updateIndex, UPDATE_INTERVAL);
 		})
 		.catch(error => console.error);
 	}
@@ -50,29 +53,54 @@ class WatchPuppies extends React.Component {
 		.map(child => child.data)
 		.filter(child => (child.post_hint === 'link' || child.post_hint === 'image') && !(child.is_self || child.locked || child.stickied));
 
+		let i = rand(0, puppies.length);
+		let index = {
+			left: i - 1,
+			main: i,
+			right: i + 1
+		};
+		index.left = index.left < 0 ? puppies.length - 1 : index.left;
+		index.right = index.right >= puppies.length ? 0 : index.right;
+
 		console.log(puppies);
-		puppies = puppies.map(puppy => <Puppy data={puppy} />);
-		this.setState({puppies});
+		this.setState({index, puppies});
 	}
 
-	startInterval () {
-		this.interval = setInterval(() => {
-			let index = this.state.index;
+	updateIndex (increase = true) {
+		clearTimeout(this.timeout);
 
-			index++;
-			if (index >= this.state.puppies.length) index = 0;
+		let index = this.state.index;
 
-			this.setState({index});
-		}, 60*ONE_SECOND);
+		if (increase) {
+			index.left = index.main;
+			index.main = index.right;
+			index.right++;
+			index.right = index.right >= this.state.puppies.length ? 0 : index.right;
+		}
+		else {
+			index.right = index.main;
+			index.main = index.left;
+			index.left--;
+			index.left = index.left < 0 ? this.state.puppies.length - 1 : index.left;
+		}
+
+		this.setState({index});
+		this.timeout = setTimeout(this.updateIndex, UPDATE_INTERVAL);
 	}
 
 	render () {
-		console.log(this.state.index);
-		let puppy = this.state.puppies ? this.state.puppies[this.state.index] : null;
+		if (this.state.puppies && this.state.index) {
+			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} />;
+			let runtLeft = <Runt data={this.state.puppies[this.state.index.left]} side="left" onClicked={this.updateIndex.bind(this, false)} />;
+			let runtRight = <Runt data={this.state.puppies[this.state.index.right]} side="right" onClicked={this.updateIndex.bind(this, true)} />;
 
-		return (
-			<div>{puppy}</div>
-		);
+			return (
+				<div>{puppy}{runtLeft}{runtRight}</div>
+			);
+		}
+		else {
+			return <div />;
+		}
 	}
 }
 

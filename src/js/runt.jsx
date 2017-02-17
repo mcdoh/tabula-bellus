@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Puppy extends React.Component {
+export default class Runt extends React.Component {
 	constructor (props) {
 		super(props);
 
@@ -42,13 +42,13 @@ export default class Puppy extends React.Component {
 	render () {
 
 		let style = {
-			backgroundImage: `url(${ this.props.data.preview.images[0].source.url || this.state.image.src })`
+			[this.props.side]: '1vh',
+			backgroundImage: `url(${ this.props.data.thumbnail  })`
 		};
 
-		console.log(this.props.data.title);
 		return (
-			<div className="puppy" style={style}>
-				<h1 className="puppy-title">{this.props.data.title}</h1>
+			<div className="runt" style={style} onClick={this.props.onClicked} >
+				<div className="runt-overlay" />
 			</div>
 		);
 	}

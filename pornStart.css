@@ -8,13 +8,16 @@ body {
 }
 
 .puppy {
-	width: 100%;
-	height: 100vh;
 	background-color: cornflowerblue;
-	background-repeat: no-repeat;
 	background-position: center;
+	background-repeat: no-repeat;
 	background-size: cover;
+	height: 100vh;
+	left: 0;
+	position: absolute;
+	top: 0;
 	transition: all 2s ease-in-out;
+	width: 100%;
 }
 
 .puppy-title {
@@ -29,3 +32,24 @@ body {
 	padding: 0;
 	margin: 0;
 }
+
+.runt {
+	background-size: cover;
+	border-radius: 50%;
+	box-sizing: border-box;
+	box-shadow: 0 0 9px 3px rgba(0,0,0, 0.25);
+	cursor: pointer;
+	height: 10vh;
+	position: absolute;
+	top: 50vh;
+	width: 10vh;
+}
+
+.runt-overlay {
+	background: #000;
+	border-radius: 50%;
+	height: 100%;
+	width: 100%;
+	opacity: 0.25;
+}
+
