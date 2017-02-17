@@ -2,7 +2,7 @@ import React from 'react';
 
 import Puppy from './puppy.jsx';
 
-const SECOND = 1000;
+const ONE_SECOND = 1000;
 
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
@@ -39,28 +39,6 @@ class WatchPuppies extends React.Component {
 		.then(json => {
 			this.parseData(json);
 			this.startInterval();
-// 			if (json) {
-// 				let index = 0;
-// 				let updateImage = function() {
-// 					if (index >= json.data.children.length) index = 0;
-//
-// 					let child = json.data.children[index]
-//
-// 					if (child.data.is_self) {
-// 						index++;
-// 						updateImage();
-// 					}
-// 					else {
-// 						let imageURL = child.data.preview.images[0].source.url;
-// 						body.style['backgroundImage'] = `url(${ imageURL })`;
-//
-// 						index++;
-// 					}
-// 				};
-//
-// 				updateImage();
-// 				setInterval(updateImage, 10000);
-// 			}
 		})
 		.catch(error => console.error);
 	}
@@ -85,7 +63,7 @@ class WatchPuppies extends React.Component {
 			if (index >= this.state.puppies.length) index = 0;
 
 			this.setState({index});
-		}, 60*SECOND);
+		}, 60*ONE_SECOND);
 	}
 
 	render () {
@@ -95,10 +73,6 @@ class WatchPuppies extends React.Component {
 		return (
 			<div>{puppy}</div>
 		);
-
-// 		return (
-// 			this.state.puppies ? <Puppy data={this.state.puppies[this.state.index]} /> : null
-// 		);
 	}
 }
 
