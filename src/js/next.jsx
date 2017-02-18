@@ -47,7 +47,7 @@ export default class Next extends React.Component {
 		};
 
 		return (
-			<div className="next" style={style} onClick={this.props.onClicked} >
+			<div className="next" style={style} onClick={this.props.clickHandler} >
 				<div className="next-overlay" />
 			</div>
 		);

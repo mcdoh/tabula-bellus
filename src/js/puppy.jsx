@@ -46,10 +46,11 @@ export default class Puppy extends React.Component {
 			backgroundImage: `url(${ this.props.data.preview.images[0].source.url.replace(/&amp;/g, '&') })`
 		};
 
-		console.log(this.props.data.title);
+		let title = this.props.showTitle ? <h1 className="puppy-title">{this.props.data.title}</h1> : null;
+
 		return (
-			<div className="puppy" style={style}>
-				<h1 className="puppy-title">{this.props.data.title}</h1>
+			<div className="puppy" style={style} onClick={this.props.clickHandler}>
+				{title}
 			</div>
 		);
 	}

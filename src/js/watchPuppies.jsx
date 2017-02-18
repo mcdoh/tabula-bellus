@@ -25,10 +25,11 @@ class WatchPuppies extends React.Component {
 		super(props);
 
 		this.state = {
-			backgroundSize: 'cover'
+			backgroundSize: 'cover',
+			showHUD: true
 		};
 
-		['updateIndex', 'toggleBackgroundSize']
+		['updateIndex', 'toggleBackgroundSize', 'toggleHUD']
 		.map(method => this[method] = this[method].bind(this));
 
 		console.log('state', this.state);
@@ -73,6 +74,10 @@ class WatchPuppies extends React.Component {
 		this.setState({backgroundSize: this.state.backgroundSize === 'cover' ? 'contain' : 'cover'});
 	}
 
+	toggleHUD () {
+		this.setState({showHUD: !this.state.showHUD});
+	}
+
 	updateIndex (increase = true) {
 		clearTimeout(this.timeout);
 
@@ -97,14 +102,22 @@ class WatchPuppies extends React.Component {
 
 	render () {
 		if (this.state.puppies && this.state.index) {
-			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} backgroundSize={this.state.backgroundSize} />;
-			let runt = <Runt data={this.state.puppies[this.state.index.main]} onClicked={this.toggleBackgroundSize} />;
-			let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" onClicked={this.updateIndex.bind(this, false)} />;
-			let next = <Next data={this.state.puppies[this.state.index.right]} side="right" onClicked={this.updateIndex.bind(this, true)} />;
+			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} backgroundSize={this.state.backgroundSize} showTitle={this.state.showHUD} clickHandler={this.toggleHUD} />;
 
-			return (
-				<div>{puppy}{prev}{next}{runt}</div>
-			);
+			if (this.state.showHUD) {
+				let runt = <Runt data={this.state.puppies[this.state.index.main]} clickHandler={this.toggleBackgroundSize} />;
+				let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" clickHandler={this.updateIndex.bind(this, false)} />;
+				let next = <Next data={this.state.puppies[this.state.index.right]} side="right" clickHandler={this.updateIndex.bind(this, true)} />;
+
+				return (
+					<div>{puppy}{prev}{next}{runt}</div>
+				);
+			}
+			else {
+				return (
+					<div>{puppy}</div>
+				);
+			}
 		}
 		else {
 			return <div />;

@@ -42,7 +42,7 @@ export default class Runt extends React.Component {
 	render () {
 
 		return (
-			<div className="runt" onClick={this.props.onClicked} >
+			<div className="runt" onClick={this.props.clickHandler} >
 				<img src={`${ this.props.data.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&') || this.props.data.thumbnail  }`} />
 				<div className="runt-overlay" />
 			</div>
