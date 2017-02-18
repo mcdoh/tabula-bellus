@@ -24,9 +24,11 @@ class WatchPuppies extends React.Component {
 	constructor (props) {
 		super(props);
 
-		this.state = {};
+		this.state = {
+			backgroundSize: 'cover'
+		};
 
-		['updateIndex', 'clicked']
+		['updateIndex', 'toggleBackgroundSize']
 		.map(method => this[method] = this[method].bind(this));
 
 		console.log('state', this.state);
@@ -67,8 +69,8 @@ class WatchPuppies extends React.Component {
 		this.setState({index, puppies});
 	}
 
-	clicked (time) {
-		console.log('clicked!', time);
+	toggleBackgroundSize () {
+		this.setState({backgroundSize: this.state.backgroundSize === 'cover' ? 'contain' : 'cover'});
 	}
 
 	updateIndex (increase = true) {
@@ -95,8 +97,8 @@ class WatchPuppies extends React.Component {
 
 	render () {
 		if (this.state.puppies && this.state.index) {
-			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} />;
-			let runt = <Runt data={this.state.puppies[this.state.index.main]} onClicked={this.clicked.bind(this, Date.now())} />;
+			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} backgroundSize={this.state.backgroundSize} />;
+			let runt = <Runt data={this.state.puppies[this.state.index.main]} onClicked={this.toggleBackgroundSize} />;
 			let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" onClicked={this.updateIndex.bind(this, false)} />;
 			let next = <Next data={this.state.puppies[this.state.index.right]} side="right" onClicked={this.updateIndex.bind(this, true)} />;
 
