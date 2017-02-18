@@ -2,6 +2,7 @@ import React from 'react';
 
 import Puppy from './puppy.jsx';
 import Runt from './runt.jsx';
+import Next from './next.jsx';
 
 const ONE_SECOND = 1000;
 const UPDATE_INTERVAL = 30 * ONE_SECOND;
@@ -25,7 +26,7 @@ class WatchPuppies extends React.Component {
 
 		this.state = {};
 
-		['updateIndex']
+		['updateIndex', 'clicked']
 		.map(method => this[method] = this[method].bind(this));
 
 		console.log('state', this.state);
@@ -66,6 +67,10 @@ class WatchPuppies extends React.Component {
 		this.setState({index, puppies});
 	}
 
+	clicked (time) {
+		console.log('clicked!', time);
+	}
+
 	updateIndex (increase = true) {
 		clearTimeout(this.timeout);
 
@@ -91,11 +96,12 @@ class WatchPuppies extends React.Component {
 	render () {
 		if (this.state.puppies && this.state.index) {
 			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} />;
-			let runtLeft = <Runt data={this.state.puppies[this.state.index.left]} side="left" onClicked={this.updateIndex.bind(this, false)} />;
-			let runtRight = <Runt data={this.state.puppies[this.state.index.right]} side="right" onClicked={this.updateIndex.bind(this, true)} />;
+			let runt = <Runt data={this.state.puppies[this.state.index.main]} onClicked={this.clicked.bind(this, Date.now())} />;
+			let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" onClicked={this.updateIndex.bind(this, false)} />;
+			let next = <Next data={this.state.puppies[this.state.index.right]} side="right" onClicked={this.updateIndex.bind(this, true)} />;
 
 			return (
-				<div>{puppy}{runtLeft}{runtRight}</div>
+				<div>{puppy}{prev}{next}{runt}</div>
 			);
 		}
 		else {
