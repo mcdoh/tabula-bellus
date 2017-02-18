@@ -20,6 +20,9 @@ body {
 }
 
 .puppy-title {
+	position: absolute;
+	bottom: 1vh;
+	left: 1vh;
 	text-stroke: 1px black;
 	color: white;
 	text-shadow:

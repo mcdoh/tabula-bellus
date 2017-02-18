@@ -102,15 +102,16 @@ class WatchPuppies extends React.Component {
 
 	render () {
 		if (this.state.puppies && this.state.index) {
-			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} backgroundSize={this.state.backgroundSize} showTitle={this.state.showHUD} clickHandler={this.toggleHUD} />;
+			let puppy =  <Puppy data={this.state.puppies[this.state.index.main]} backgroundSize={this.state.backgroundSize} clickHandler={this.toggleHUD} />;
 
 			if (this.state.showHUD) {
+				let title = <h1 className="puppy-title">{this.state.puppies[this.state.index.main].title}</h1>;
 				let runt = <Runt data={this.state.puppies[this.state.index.main]} clickHandler={this.toggleBackgroundSize} />;
 				let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" clickHandler={this.updateIndex.bind(this, false)} />;
 				let next = <Next data={this.state.puppies[this.state.index.right]} side="right" clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
-					<div>{puppy}{prev}{next}{runt}</div>
+					<div>{puppy}{title}{prev}{next}{runt}</div>
 				);
 			}
 			else {
