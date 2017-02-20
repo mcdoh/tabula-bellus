@@ -42,7 +42,8 @@ export default class Puppy extends React.Component {
 	render () {
 
 		let style = {
-			zIndex: this.props.transitioning ? 1 : 0,
+			zIndex: this.props.primary ? 1 : 0,
+			opacity: this.props.primary && this.props.transitioning ? 0 : 1,
 			backgroundSize: this.props.backgroundSize,
 			backgroundImage: `url(${ this.props.data.preview.images[0].source.url.replace(/&amp;/g, '&') })`
 		};
