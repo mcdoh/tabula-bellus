@@ -60,6 +60,7 @@ body {
 }
 
 .next {
+	background-position: center;
 	background-size: cover;
 	border-radius: 50%;
 	box-sizing: border-box;
@@ -68,6 +69,7 @@ body {
 	height: 10vh;
 	position: absolute;
 	top: 50vh;
+	transition: all 1s ease-out;
 	width: 10vh;
 	z-index: 2;
 }

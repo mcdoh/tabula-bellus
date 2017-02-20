@@ -37,7 +37,7 @@ class WatchPuppies extends React.Component {
 
 		this.nextImage = new Image();
 
-		['toggleBackgroundSize', 'toggleHUD', 'swapPrimary', 'loadNext', 'updateIndex']
+		['increment', 'decrement', 'toggleBackgroundSize', 'toggleHUD', 'swapPrimary', 'loadNext', 'updateIndex']
 		.map(method => this[method] = this[method].bind(this));
 
 		console.log('state', this.state);
@@ -83,6 +83,18 @@ class WatchPuppies extends React.Component {
 		return item.preview.images[0].source.url.replace(/&amp;/g, '&');
 	}
 
+	getThumbnailURL (item) {
+		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&')
+	}
+
+	increment (index) {
+		return ++index === this.state.puppies.length ? 0 : index;
+	}
+
+	decrement (index) {
+		return --index < 0 ? this.state.puppies.length - 1 : index;
+	}
+
 	toggleBackgroundSize () {
 		this.setState({backgroundSize: this.state.backgroundSize === 'cover' ? 'contain' : 'cover'});
 	}
@@ -91,25 +103,35 @@ class WatchPuppies extends React.Component {
 		this.setState({showHUD: !this.state.showHUD});
 	}
 
+	preloadThumbnails () {
+		let nextLeft = new Image();
+		let nextRight = new Image();
+
+		nextLeft.src = this.getThumbnailURL(this.state.puppies[this.decrement(this.state.index.left)]);
+		nextRight.src = this.getThumbnailURL(this.state.puppies[this.increment(this.state.index.right)]);
+	}
+
 	swapPrimary () {
 		this.setState({
 			onDeck: this.state.primary,
 			primary: this.state.onDeck,
 			transitioning: false
 		});
+
+		this.preloadThumbnails();
 	}
 
 	loadNext (index) {
 		let nextImageLoaded = event => {
-			this.setState({index, transitioning: true});
 			this.nextImage.removeEventListener('load', nextImageLoaded);
 
 			this.updateTO = setTimeout(this.updateIndex, UPDATE_INTERVAL);
 			this.transitionTO = setTimeout(this.swapPrimary, TRANSITION_TIME);
+
+			this.setState({index, transitioning: true});
 		};
 
 		this.nextImage.addEventListener('load', nextImageLoaded);
-
 		this.nextImage.src = this.getImageURL(this.state.puppies[index.main]);
 	}
 
@@ -122,14 +144,12 @@ class WatchPuppies extends React.Component {
 		if (increase) {
 			index.left = index.main;
 			index.main = index.right;
-			index.right++;
-			index.right = index.right >= this.state.puppies.length ? 0 : index.right;
+			index.right = this.increment(index.right);
 		}
 		else {
 			index.right = index.main;
 			index.main = index.left;
-			index.left--;
-			index.left = index.left < 0 ? this.state.puppies.length - 1 : index.left;
+			index.left = this.decrement(index.left);
 		}
 
 		index[this.state.onDeck] = index.main;
