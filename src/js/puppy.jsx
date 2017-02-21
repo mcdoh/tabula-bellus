@@ -8,6 +8,8 @@ export default class Puppy extends React.Component {
 		['setPrimary', 'loadNext']
 		.map(method => this[method] = this[method].bind(this));
 
+		this.getImageURL = getImageURL;
+
 		this.state = {
 			primary: this.props.data
 		};
@@ -28,7 +30,8 @@ export default class Puppy extends React.Component {
 	}
 
 	loadNext (imageJSON) {
-		loadImage(getImageURL(imageJSON))
+		// use 'this.getImageURL' so extended classes can specify different function i.e. 'getThumbnailURL'
+		loadImage(this.getImageURL(imageJSON))
 		.then(imageURL => {
 			if (this.props.onImageLoaded) this.props.onImageLoaded();
 			this.transitionTO = setTimeout(this.setPrimary, this.props.transitionTime);

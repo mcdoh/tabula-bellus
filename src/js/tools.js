@@ -2,21 +2,42 @@ export const ONE_SECOND = 1000;
 
 export function noop () {}
 
+export function isLandscape (item) {
+	try {
+		return item.preview.images[0].source.width > item.preview.images[0].source.height;
+	}
+	catch (error) {
+		return null;
+	}
+}
+
+export function aspectRatio (item) {
+	try {
+		let width = item.preview.images[0].source.width;
+		let height = item.preview.images[0].source.height;
+
+		return width > height ? height/width : width/height;
+	}
+	catch (error) {
+		return null;
+	}
+}
+
 export function getImageURL (item) {
 	try {
 		return item.preview.images[0].source.url.replace(/&amp;/g, '&');
 	}
 	catch (error) {
-		return ''
+		return '';
 	}
 }
 
 export function getThumbnailURL (item) {
 	try {
-		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&')
+		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&');
 	}
 	catch (error) {
-		return ''
+		return '';
 	}
 }
 
@@ -42,11 +63,11 @@ export function loadImage (imageURL) {
 		let imageLoader = new Image();
 
 		imageLoader.onload = () => {
-			resolve(imageURL)
+			resolve(imageURL);
 		};
 
 		imageLoader.onerror = () => {
-			reject(imageURL)
+			reject(imageURL);
 		};
 
 		imageLoader.src = imageURL;

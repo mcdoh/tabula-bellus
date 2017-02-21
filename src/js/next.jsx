@@ -6,6 +6,7 @@ import {ONE_SECOND, getThumbnailURL} from './tools.js';
 export default class Next extends Puppy {
 	constructor (props) {
 		super(props);
+		this.getImageURL = getThumbnailURL;
 	}
 
 	render () {
@@ -16,7 +17,7 @@ export default class Next extends Puppy {
 			opacity: this.state.nextImage ? 0 : 1,
 			boxShadow: `0 0 9px 3px rgba(0,0,0, ${ this.props.theDarkness })`,
 			backgroundImage: `linear-gradient( rgba(0,0,0, ${ this.props.theDarkness }), rgba(0,0,0, ${ this.props.theDarkness }) ), url(${ getThumbnailURL(this.state.primary) })`,
-			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
+			transition: `opacity ${ this.props.transitionTime / ONE_SECOND }s ease-in-out`
 		};
 
 		let nextNextStyle = {
@@ -24,7 +25,7 @@ export default class Next extends Puppy {
 			[this.props.side]: '1vh',
 			boxShadow: `0 0 9px 3px rgba(0,0,0, ${ this.props.theDarkness })`,
 			backgroundImage: `linear-gradient( rgba(0,0,0, ${ this.props.theDarkness }), rgba(0,0,0, ${ this.props.theDarkness }) ), url(${ getThumbnailURL(this.state.nextImage || this.state.primary) })`,
-			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
+			transition: `opacity ${ this.props.transitionTime / ONE_SECOND }s ease-in-out`
 		};
 
 		let primary = <div className="next" style={primaryStyle} onClick={this.props.clickHandler} />;

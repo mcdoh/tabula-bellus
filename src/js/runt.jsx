@@ -1,24 +1,29 @@
 import React from 'react';
+import Puppy from './puppy.jsx';
 
-export default class Runt extends React.Component {
+import {ONE_SECOND, getThumbnailURL, isLandscape, aspectRatio} from './tools.js';
+
+export default class Runt extends Puppy {
 	constructor (props) {
 		super(props);
-
-		['getImageURL']
-		.map(method => this[method] = this[method].bind(this));
-	}
-
-	getImageURL (item) {
-		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&');
+		this.getImageURL = getThumbnailURL;
 	}
 
 	render () {
 
+		let style = {
+			opacity: this.state.nextImage ? 0 : 1,
+			[isLandscape(this.state.primary) ? 'width' : 'height']: '10vh',
+			[isLandscape(this.state.primary) ? 'height' : 'width']: `${ aspectRatio(this.state.primary) * 10 }vh`,
+			boxShadow: `0 0 9px 3px rgba(0,0,0, ${ this.props.theDarkness })`,
+			backgroundImage: `linear-gradient( rgba(0,0,0, ${ this.props.theDarkness }), rgba(0,0,0, ${ this.props.theDarkness }) ), url(${ getThumbnailURL(this.state.primary) })`,
+			transition: `opacity ${ this.props.transitionTime / ONE_SECOND }s ease`
+		};
+
+		let runt = <div className="runt" style={style} onClick={this.props.clickHandler} />;
+
 		return (
-			<div className="runt" onClick={this.props.clickHandler} >
-				<img src={`${ this.getImageURL(this.props.data) }`} />
-				<div className="runt-overlay" />
-			</div>
+			<div>{runt}</div>
 		);
 	}
 }

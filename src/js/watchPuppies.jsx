@@ -114,6 +114,8 @@ class WatchPuppies extends React.Component {
 
 				let runt = <Runt
 					data={this.state.puppies[this.state.index.main]}
+					theDarkness={THE_DARKNESS}
+					transitionTime={TRANSITION_TIME / 2}
 					clickHandler={this.toggleBackgroundSize} />;
 
 				let prev = <Next

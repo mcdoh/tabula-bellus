@@ -37,7 +37,8 @@ body {
 }
 
 .runt {
-	box-shadow: 0 0 9px 3px rgba(0,0,0, 0.25);
+	background-position: center;
+	background-size: cover;
 	cursor: pointer;
 	max-height: 10vh;
 	max-width: 10vh;
@@ -45,18 +46,6 @@ body {
 	right: 1vh;
 	bottom: 1vh;
 	z-index: 2;
-}
-
-.runt img {
-	max-height: 10vh;
-	max-width: 10vh;
-}
-
-.runt-overlay {
-	background: #000;
-	height: 100%;
-	width: 100%;
-	opacity: 0.25;
 }
 
 .next {
