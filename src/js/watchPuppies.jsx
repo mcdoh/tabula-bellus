@@ -6,6 +6,7 @@ import Next from './next.jsx';
 
 import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
 
+const THE_DARKNESS = 0.25;
 const TRANSITION_TIME = 2 * ONE_SECOND;
 const UPDATE_INTERVAL = 30 * ONE_SECOND;
 
@@ -118,12 +119,14 @@ class WatchPuppies extends React.Component {
 				let prev = <Next
 					data={this.state.puppies[this.state.index.left]}
 					side="left"
+					theDarkness={THE_DARKNESS}
 					transitionTime={TRANSITION_TIME}
 					clickHandler={this.updateIndex.bind(this, false)} />;
 
 				let next = <Next
 					data={this.state.puppies[this.state.index.right]}
 					side="right"
+					theDarkness={THE_DARKNESS}
 					transitionTime={TRANSITION_TIME}
 					clickHandler={this.updateIndex.bind(this, true)} />;
 

@@ -3,8 +3,6 @@ import Puppy from './puppy.jsx';
 
 import {ONE_SECOND, getThumbnailURL} from './tools.js';
 
-const THE_DARKNESS = 0.25;
-
 export default class Next extends Puppy {
 	constructor (props) {
 		super(props);
@@ -16,14 +14,16 @@ export default class Next extends Puppy {
 			zIndex: 3,
 			[this.props.side]: '1vh',
 			opacity: this.state.nextImage ? 0 : 1,
-			backgroundImage: `linear-gradient( rgba(0,0,0, ${ THE_DARKNESS }), rgba(0,0,0, ${ THE_DARKNESS }) ), url(${ getThumbnailURL(this.state.primary) })`,
+			boxShadow: `0 0 9px 3px rgba(0,0,0, ${ this.props.theDarkness })`,
+			backgroundImage: `linear-gradient( rgba(0,0,0, ${ this.props.theDarkness }), rgba(0,0,0, ${ this.props.theDarkness }) ), url(${ getThumbnailURL(this.state.primary) })`,
 			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
 		};
 
 		let nextNextStyle = {
 			zIndex: 2,
 			[this.props.side]: '1vh',
-			backgroundImage: `linear-gradient( rgba(0,0,0, ${ THE_DARKNESS }), rgba(0,0,0, ${ THE_DARKNESS }) ), url(${ getThumbnailURL(this.state.nextImage || this.state.primary) })`,
+			boxShadow: `0 0 9px 3px rgba(0,0,0, ${ this.props.theDarkness })`,
+			backgroundImage: `linear-gradient( rgba(0,0,0, ${ this.props.theDarkness }), rgba(0,0,0, ${ this.props.theDarkness }) ), url(${ getThumbnailURL(this.state.nextImage || this.state.primary) })`,
 			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
 		};
 
