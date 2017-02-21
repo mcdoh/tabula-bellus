@@ -58,13 +58,10 @@ class WatchPuppies extends React.Component {
 
 		let i = rand(0, puppies.length);
 		let index = {
-			left: i - 1,
 			main: i,
-			right: i + 1
+			left: this.decrement(i, puppies),
+			right: this.increment(i, puppies)
 		};
-		index.left = index.left < 0 ? puppies.length - 1 : index.left;
-		index.right = index.right >= puppies.length ? 0 : index.right;
-		index.snoopy = index.main;
 
 		console.log(puppies);
 		this.setState({index, puppies});
@@ -78,12 +75,12 @@ class WatchPuppies extends React.Component {
 		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&')
 	}
 
-	increment (index) {
-		return ++index === this.state.puppies.length ? 0 : index;
+	increment (index, puppies = this.state.puppies) {
+		return ++index === puppies.length ? 0 : index;
 	}
 
-	decrement (index) {
-		return --index < 0 ? this.state.puppies.length - 1 : index;
+	decrement (index, puppies = this.state.puppies) {
+		return --index < 0 ? puppies.length - 1 : index;
 	}
 
 	toggleBackgroundSize () {
