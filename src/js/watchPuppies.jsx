@@ -8,9 +8,6 @@ const ONE_SECOND = 1000;
 const TRANSITION_TIME = 2 * ONE_SECOND;
 const UPDATE_INTERVAL = 30 * ONE_SECOND;
 
-const SNOOPY = 'snoopy';
-const SCOOBY = 'scooby';
-
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
 }
@@ -30,17 +27,11 @@ class WatchPuppies extends React.Component {
 
 		this.state = {
 			backgroundSize: 'cover',
-			primary: SNOOPY,
-			onDeck: SCOOBY,
 			showHUD: true
 		};
 
-		this.nextImage = new Image();
-
-		['increment', 'decrement', 'toggleBackgroundSize', 'toggleHUD', 'swapPrimary', 'loadNext', 'updateIndex']
+		['increment', 'decrement', 'toggleBackgroundSize', 'toggleHUD', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
-
-		console.log('state', this.state);
 	}
 
 	componentDidMount () {
@@ -111,34 +102,8 @@ class WatchPuppies extends React.Component {
 		nextRight.src = this.getThumbnailURL(this.state.puppies[this.increment(this.state.index.right)]);
 	}
 
-	swapPrimary () {
-		this.setState({
-			onDeck: this.state.primary,
-			primary: this.state.onDeck,
-			transitioning: false
-		});
-
-		this.preloadThumbnails();
-	}
-
-	loadNext (index) {
-		let nextImageLoaded = event => {
-			this.nextImage.removeEventListener('load', nextImageLoaded);
-
-			this.updateTO = setTimeout(this.updateIndex, UPDATE_INTERVAL);
-			this.transitionTO = setTimeout(this.swapPrimary, TRANSITION_TIME);
-
-			this.setState({index, transitioning: true});
-		};
-
-		this.nextImage.addEventListener('load', nextImageLoaded);
-		this.nextImage.src = this.getImageURL(this.state.puppies[index.main]);
-	}
-
 	updateIndex (increase = true) {
 		clearTimeout(this.updateTO);
-		clearTimeout(this.transitionTO);
-
 		let index = this.state.index;
 
 		if (increase) {
@@ -152,26 +117,22 @@ class WatchPuppies extends React.Component {
 			index.left = this.decrement(index.left);
 		}
 
-		index[this.state.onDeck] = index.main;
+		this.setState({index});
+	}
 
-		this.loadNext(index);
+	setUpdateTimeout () {
+		this.updateTO = setTimeout(this.updateIndex, UPDATE_INTERVAL);
+		this.preloadThumbnails();
 	}
 
 	render () {
 		if (this.state.puppies && this.state.index) {
-			let snoopy = this.state.index.snoopy !== undefined ? <Puppy
-				data={this.state.puppies[this.state.index.snoopy]}
+			let puppy = <Puppy
+				data={this.state.puppies[this.state.index.main]}
 				backgroundSize={this.state.backgroundSize}
-				primary={this.state.primary === SNOOPY}
-				transitioning={this.state.transitioning}
-				clickHandler={this.toggleHUD} /> : null;
-
-			let scooby = this.state.index.scooby !== undefined ? <Puppy
-				data={this.state.puppies[this.state.index.scooby]}
-				backgroundSize={this.state.backgroundSize}
-				primary={this.state.primary === SCOOBY}
-				transitioning={this.state.transitioning}
-				clickHandler={this.toggleHUD} /> : null;
+				transitionTime={TRANSITION_TIME}
+				onImageLoaded={this.setUpdateTimeout}
+				clickHandler={this.toggleHUD} />;
 
 			if (this.state.showHUD) {
 				let title = <h1 className="puppy-title">{this.state.puppies[this.state.index.main].title}</h1>;
@@ -180,12 +141,12 @@ class WatchPuppies extends React.Component {
 				let next = <Next data={this.state.puppies[this.state.index.right]} side="right" clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
-					<div>{snoopy}{scooby}{title}{prev}{next}{runt}</div>
+					<div>{puppy}{title}{prev}{next}{runt}</div>
 				);
 			}
 			else {
 				return (
-					<div>{snoopy}{scooby}</div>
+					<div>{puppy}</div>
 				);
 			}
 		}
