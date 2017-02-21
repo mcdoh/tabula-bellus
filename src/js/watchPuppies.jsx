@@ -4,21 +4,13 @@ import Puppy from './puppy.jsx';
 import Runt from './runt.jsx';
 import Next from './next.jsx';
 
-const ONE_SECOND = 1000;
+import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
+
 const TRANSITION_TIME = 2 * ONE_SECOND;
 const UPDATE_INTERVAL = 30 * ONE_SECOND;
 
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
-}
-
-function rand (min, max) {
-	if (max == null) {
-		max = min;
-		min = 0;
-	}
-
-	return min + Math.floor(Math.random() * (max - min + 1));
 }
 
 class WatchPuppies extends React.Component {
@@ -30,7 +22,7 @@ class WatchPuppies extends React.Component {
 			showHUD: true
 		};
 
-		['increment', 'decrement', 'toggleBackgroundSize', 'toggleHUD', 'updateIndex', 'setUpdateTimeout']
+		['toggleBackgroundSize', 'toggleHUD', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -59,28 +51,12 @@ class WatchPuppies extends React.Component {
 		let i = rand(0, puppies.length);
 		let index = {
 			main: i,
-			left: this.decrement(i, puppies),
-			right: this.increment(i, puppies)
+			left: decrement(i, puppies),
+			right: increment(i, puppies)
 		};
 
 		console.log(puppies);
 		this.setState({index, puppies});
-	}
-
-	getImageURL (item) {
-		return item.preview.images[0].source.url.replace(/&amp;/g, '&');
-	}
-
-	getThumbnailURL (item) {
-		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&')
-	}
-
-	increment (index, puppies = this.state.puppies) {
-		return ++index === puppies.length ? 0 : index;
-	}
-
-	decrement (index, puppies = this.state.puppies) {
-		return --index < 0 ? puppies.length - 1 : index;
 	}
 
 	toggleBackgroundSize () {
@@ -92,11 +68,11 @@ class WatchPuppies extends React.Component {
 	}
 
 	preloadThumbnails () {
-		let nextLeft = new Image();
-		let nextRight = new Image();
+		let nextLeft = this.state.puppies[decrement(this.state.index.left, this.state.puppies)];
+		let nextRight = this.state.puppies[increment(this.state.index.right, this.state.puppies)];
 
-		nextLeft.src = this.getThumbnailURL(this.state.puppies[this.decrement(this.state.index.left)]);
-		nextRight.src = this.getThumbnailURL(this.state.puppies[this.increment(this.state.index.right)]);
+		loadImage(getThumbnailURL(nextLeft));
+		loadImage(getThumbnailURL(nextRight));
 	}
 
 	updateIndex (increase = true) {
@@ -106,12 +82,12 @@ class WatchPuppies extends React.Component {
 		if (increase) {
 			index.left = index.main;
 			index.main = index.right;
-			index.right = this.increment(index.right);
+			index.right = increment(index.right, this.state.puppies);
 		}
 		else {
 			index.right = index.main;
 			index.main = index.left;
-			index.left = this.decrement(index.left);
+			index.left = decrement(index.left, this.state.puppies);
 		}
 
 		this.setState({index});
@@ -124,6 +100,7 @@ class WatchPuppies extends React.Component {
 
 	render () {
 		if (this.state.puppies && this.state.index) {
+
 			let puppy = <Puppy
 				data={this.state.puppies[this.state.index.main]}
 				backgroundSize={this.state.backgroundSize}
@@ -133,9 +110,22 @@ class WatchPuppies extends React.Component {
 
 			if (this.state.showHUD) {
 				let title = <h1 className="puppy-title">{this.state.puppies[this.state.index.main].title}</h1>;
-				let runt = <Runt data={this.state.puppies[this.state.index.main]} clickHandler={this.toggleBackgroundSize} />;
-				let prev = <Next data={this.state.puppies[this.state.index.left]} side="left" clickHandler={this.updateIndex.bind(this, false)} />;
-				let next = <Next data={this.state.puppies[this.state.index.right]} side="right" clickHandler={this.updateIndex.bind(this, true)} />;
+
+				let runt = <Runt
+					data={this.state.puppies[this.state.index.main]}
+					clickHandler={this.toggleBackgroundSize} />;
+
+				let prev = <Next
+					data={this.state.puppies[this.state.index.left]}
+					side="left"
+					transitionTime={TRANSITION_TIME}
+					clickHandler={this.updateIndex.bind(this, false)} />;
+
+				let next = <Next
+					data={this.state.puppies[this.state.index.right]}
+					side="right"
+					transitionTime={TRANSITION_TIME}
+					clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
 					<div>{puppy}{title}{prev}{next}{runt}</div>

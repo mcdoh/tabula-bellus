@@ -1,13 +1,12 @@
 import React from 'react';
+import {ONE_SECOND, loadImage, getImageURL} from './tools.js';
 
 export default class Puppy extends React.Component {
 	constructor (props) {
 		super(props);
 
-		['getImageURL', 'setPrimary', 'loadNext']
+		['setPrimary', 'loadNext']
 		.map(method => this[method] = this[method].bind(this));
-
-		this.imageLoader = new Image();
 
 		this.state = {
 			primary: this.props.data
@@ -21,10 +20,6 @@ export default class Puppy extends React.Component {
 		}
 	}
 
-	getImageURL (imageJSON) {
-		return imageJSON.preview.images[0].source.url.replace(/&amp;/g, '&');
-	}
-
 	setPrimary () {
 		this.setState({
 			primary: this.state.nextImage,
@@ -33,17 +28,17 @@ export default class Puppy extends React.Component {
 	}
 
 	loadNext (imageJSON) {
-		let nextImageLoaded = event => {
-			this.imageLoader.removeEventListener('load', nextImageLoaded);
-
-			this.props.onImageLoaded();
+		loadImage(getImageURL(imageJSON))
+		.then(imageURL => {
+			if (this.props.onImageLoaded) this.props.onImageLoaded();
 			this.transitionTO = setTimeout(this.setPrimary, this.props.transitionTime);
 
 			this.setState({nextImage: imageJSON});
-		};
-
-		this.imageLoader.addEventListener('load', nextImageLoaded);
-		this.imageLoader.src = this.getImageURL(imageJSON);
+		})
+		.catch(error => {
+			// report that this image should be removed from list and next image loaded
+			console.error(error);
+		});
 	}
 
 	render () {
@@ -52,13 +47,15 @@ export default class Puppy extends React.Component {
 			zIndex: 1,
 			opacity: this.state.nextImage ? 0 : 1,
 			backgroundSize: this.props.backgroundSize,
-			backgroundImage: `url(${ this.getImageURL(this.state.primary) })`
+			backgroundImage: `url(${ getImageURL(this.state.primary) })`,
+			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
 		};
 
 		let nextImageStyle = {
 			zIndex: 0,
 			backgroundSize: this.props.backgroundSize,
-			backgroundImage: `url(${ this.getImageURL(this.state.nextImage || this.state.primary) })`
+			backgroundImage: `url(${ getImageURL(this.state.nextImage || this.state.primary) })`,
+			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
 		};
 
 		let primary = <div className="puppy" style={primaryStyle} onClick={this.props.clickHandler} />;
