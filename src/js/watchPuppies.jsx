@@ -43,7 +43,7 @@ class WatchPuppies extends React.Component {
 	}
 
 	parseData (data) {
-		console.log(data);
+		console.debug(data);
 
 		let puppies = data.data.children
 		.map(child => child.data)
@@ -56,7 +56,7 @@ class WatchPuppies extends React.Component {
 			right: increment(i, puppies)
 		};
 
-		console.log(puppies);
+		console.debug(puppies);
 		this.setState({index, puppies});
 	}
 
@@ -147,5 +147,9 @@ class WatchPuppies extends React.Component {
 		}
 	}
 }
+
+WatchPuppies.propTypes = {
+	source: React.PropTypes.string.isRequired
+};
 
 export default WatchPuppies;

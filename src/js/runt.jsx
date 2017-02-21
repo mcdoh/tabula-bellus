@@ -3,7 +3,7 @@ import Puppy from './puppy.jsx';
 
 import {ONE_SECOND, getThumbnailURL, isLandscape, aspectRatio} from './tools.js';
 
-export default class Runt extends Puppy {
+class Runt extends Puppy {
 	constructor (props) {
 		super(props);
 		this.getImageURL = getThumbnailURL;
@@ -27,3 +27,5 @@ export default class Runt extends Puppy {
 		);
 	}
 }
+
+export default Runt;

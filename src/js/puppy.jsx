@@ -1,7 +1,7 @@
 import React from 'react';
 import {ONE_SECOND, loadImage, getImageURL} from './tools.js';
 
-export default class Puppy extends React.Component {
+class Puppy extends React.Component {
 	constructor (props) {
 		super(props);
 
@@ -73,3 +73,14 @@ export default class Puppy extends React.Component {
 		);
 	}
 }
+
+Puppy.propTypes = {
+	data: React.PropTypes.object.isRequired,
+	backgroundSize: React.PropTypes.string,
+	theDarkness: React.PropTypes.number,
+	transitionTime: React.PropTypes.number.isRequired,
+	onImageLoaded: React.PropTypes.func,
+	clickHandler: React.PropTypes.func.isRequired
+};
+
+export default Puppy;
