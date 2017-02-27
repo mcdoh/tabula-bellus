@@ -3,4 +3,11 @@ import ReactDOM from 'react-dom';
 
 import WatchPuppies from './watchPuppies.jsx';
 
-ReactDOM.render(<WatchPuppies source='earthporn' />, document.getElementById('pornStart'));
+let watchPuppies = <WatchPuppies
+	source='earthporn'
+	backgroundSize='cover'
+	showHUD={true}
+	trimTitle={true} />;
+
+ReactDOM.render(watchPuppies, document.getElementById('pornStart'));
+

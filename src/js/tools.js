@@ -1,4 +1,5 @@
 export const ONE_SECOND = 1000;
+export const THUMBNAIL_INDEX = 0;
 
 export function noop () {}
 
@@ -11,12 +12,14 @@ export function isLandscape (item) {
 	}
 }
 
-export function aspectRatio (item) {
+export function aspectRatio (item, index) {
 	try {
-		let width = item.preview.images[0].source.width;
-		let height = item.preview.images[0].source.height;
+		let width = index === undefined ? item.preview.images[0].source.width :
+			item.preview.images[0].resolutions[index].width;
+		let height = index === undefined ? item.preview.images[0].source.height :
+			item.preview.images[0].resolutions[index].height;
 
-		return width > height ? height/width : width/height;
+		return (width > height ? height/width : width/height).toFixed(3);
 	}
 	catch (error) {
 		return null;
@@ -34,7 +37,7 @@ export function getImageURL (item) {
 
 export function getThumbnailURL (item) {
 	try {
-		return item.preview.images[0].resolutions[0].url.replace(/&amp;/g, '&');
+		return item.preview.images[0].resolutions[THUMBNAIL_INDEX].url.replace(/&amp;/g, '&');
 	}
 	catch (error) {
 		return '';

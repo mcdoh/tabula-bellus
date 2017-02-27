@@ -6,6 +6,7 @@ import Next from './next.jsx';
 
 import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
 
+const TRIM_TITLE = /\s*\[.*\]\s*/g;
 const THE_DARKNESS = 0.25;
 const TRANSITION_TIME = 2 * ONE_SECOND;
 const UPDATE_INTERVAL = 30 * ONE_SECOND;
@@ -19,8 +20,9 @@ class WatchPuppies extends React.Component {
 		super(props);
 
 		this.state = {
-			backgroundSize: 'cover',
-			showHUD: true
+			backgroundSize: props.backgroundSize,
+			showHUD: props.showHUD,
+			trimTitle: props.trimTitle
 		};
 
 		['toggleBackgroundSize', 'toggleHUD', 'updateIndex', 'setUpdateTimeout']
@@ -43,7 +45,6 @@ class WatchPuppies extends React.Component {
 	}
 
 	parseData (data) {
-		console.debug(data);
 
 		let puppies = data.data.children
 		.map(child => child.data)
@@ -56,7 +57,6 @@ class WatchPuppies extends React.Component {
 			right: increment(i, puppies)
 		};
 
-		console.debug(puppies);
 		this.setState({index, puppies});
 	}
 
@@ -110,7 +110,8 @@ class WatchPuppies extends React.Component {
 				clickHandler={this.toggleHUD} />;
 
 			if (this.state.showHUD) {
-				let title = <h1 className="puppy-title">{this.state.puppies[this.state.index.main].title}</h1>;
+				let title = this.props.trimTitle ? this.state.puppies[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.puppies[this.state.index.main].title;
+				title = <h1 className="puppy-title">{title}</h1>;
 
 				let runt = <Runt
 					data={this.state.puppies[this.state.index.main]}
@@ -149,7 +150,10 @@ class WatchPuppies extends React.Component {
 }
 
 WatchPuppies.propTypes = {
-	source: React.PropTypes.string.isRequired
+	source:         React.PropTypes.string.isRequired,
+	backgroundSize: React.PropTypes.string.isRequired,
+	showHUD:        React.PropTypes.bool.isRequired,
+	trimTitle:      React.PropTypes.bool.isRequired
 };
 
 export default WatchPuppies;
