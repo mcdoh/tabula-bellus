@@ -4,6 +4,8 @@ import Puppy from './puppy.jsx';
 import Runt from './runt.jsx';
 import Next from './next.jsx';
 
+import Modal from './modal.jsx';
+
 import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
 
 const TRIM_TITLE = /\s*\[.*\]\s*/g;
@@ -22,10 +24,11 @@ class WatchPuppies extends React.Component {
 		this.state = {
 			backgroundSize: props.backgroundSize,
 			showHUD: props.showHUD,
-			trimTitle: props.trimTitle
+			trimTitle: props.trimTitle,
+			showSettings: false
 		};
 
-		['toggleBackgroundSize', 'toggleHUD', 'updateIndex', 'setUpdateTimeout']
+		['toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -66,6 +69,10 @@ class WatchPuppies extends React.Component {
 
 	toggleHUD () {
 		this.setState({showHUD: !this.state.showHUD});
+	}
+
+	toggleSettings () {
+		this.setState({showSettings: !this.state.showSettings});
 	}
 
 	preloadThumbnails () {
@@ -113,6 +120,14 @@ class WatchPuppies extends React.Component {
 				let title = this.props.trimTitle ? this.state.puppies[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.puppies[this.state.index.main].title;
 				title = <h1 className="puppy-title">{title}</h1>;
 
+				let settingsToggle = <button
+					className="mdl-button mdl-js-button mdl-button--icon settings-toggle"
+					onClick={this.toggleSettings} >
+					<i className="material-icons">more_vert</i>
+				</button>;
+
+				let settings = this.state.showSettings ? <Modal onClick={this.toggleSettings} /> : null;
+
 				let runt = <Runt
 					data={this.state.puppies[this.state.index.main]}
 					theDarkness={THE_DARKNESS}
@@ -134,7 +149,7 @@ class WatchPuppies extends React.Component {
 					clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
-					<div>{puppy}{title}{prev}{next}{runt}</div>
+					<div>{puppy}{settingsToggle}{settings}{title}{prev}{next}{runt}</div>
 				);
 			}
 			else {
@@ -151,9 +166,9 @@ class WatchPuppies extends React.Component {
 
 WatchPuppies.propTypes = {
 	source:         React.PropTypes.string.isRequired,
-	backgroundSize: React.PropTypes.string.isRequired,
-	showHUD:        React.PropTypes.bool.isRequired,
-	trimTitle:      React.PropTypes.bool.isRequired
+	backgroundSize: React.PropTypes.string,
+	showHUD:        React.PropTypes.bool,
+	trimTitle:      React.PropTypes.bool
 };
 
 export default WatchPuppies;

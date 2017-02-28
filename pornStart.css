@@ -18,6 +18,18 @@ body {
 	width: 100%;
 }
 
+.settings-toggle {
+	position: absolute;
+	top: 1vh;
+	right: 1vh;
+	color: white;
+	z-index: 2;
+}
+
+.settings-modal {
+	z-index: 2;
+}
+
 .puppy-title {
 	position: absolute;
 	bottom: 1vh;
