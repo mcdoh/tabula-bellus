@@ -7,7 +7,7 @@ body {
 	margin: 0;
 }
 
-.puppy {
+.buffer-image {
 	background-color: #000;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -30,7 +30,7 @@ body {
 	z-index: 2;
 }
 
-.puppy-title {
+.porn-start-title {
 	position: absolute;
 	bottom: 1vh;
 	left: 1vh;
@@ -48,7 +48,7 @@ body {
 	z-index: 2;
 }
 
-.runt {
+.buffer-thumbnail {
 	background-position: center;
 	background-size: cover;
 	cursor: pointer;
@@ -60,7 +60,7 @@ body {
 	z-index: 2;
 }
 
-.next {
+.buffer-next {
 	background-position: center;
 	background-size: cover;
 	border-radius: 50%;

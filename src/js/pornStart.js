@@ -1,13 +1,13 @@
 import React    from 'react';
 import ReactDOM from 'react-dom';
 
-import WatchPuppies from './watchPuppies.jsx';
+import PornStart from './pornStart.jsx';
 
-let watchPuppies = <WatchPuppies
+let pornStart = <PornStart
 	source='earthporn'
 	backgroundSize='cover'
 	showHUD={true}
 	trimTitle={true} />;
 
-ReactDOM.render(watchPuppies, document.getElementById('pornStart'));
+ReactDOM.render(pornStart, document.getElementById('pornStart'));
 

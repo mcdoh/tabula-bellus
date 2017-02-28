@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Puppy from './puppy.jsx';
-import Runt from './runt.jsx';
-import Next from './next.jsx';
+import BufferImage from './bufferImage.jsx';
+import BufferThumbnail from './bufferThumbnail.jsx';
+import BufferNext from './bufferNext.jsx';
 
 import Modal from './modal.jsx';
 
@@ -17,7 +17,7 @@ function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
 }
 
-class WatchPuppies extends React.Component {
+class PornStart extends React.Component {
 	constructor (props) {
 		super(props);
 
@@ -49,18 +49,18 @@ class WatchPuppies extends React.Component {
 
 	parseData (data) {
 
-		let puppies = data.data.children
+		let porn = data.data.children
 		.map(child => child.data)
 		.filter(child => (child.post_hint === 'link' || child.post_hint === 'image') && !(child.is_self || child.locked || child.stickied));
 
-		let i = rand(0, puppies.length);
+		let i = rand(0, porn.length);
 		let index = {
 			main: i,
-			left: decrement(i, puppies),
-			right: increment(i, puppies)
+			left: decrement(i, porn),
+			right: increment(i, porn)
 		};
 
-		this.setState({index, puppies});
+		this.setState({index, porn});
 	}
 
 	toggleBackgroundSize () {
@@ -76,8 +76,8 @@ class WatchPuppies extends React.Component {
 	}
 
 	preloadThumbnails () {
-		let nextLeft = this.state.puppies[decrement(this.state.index.left, this.state.puppies)];
-		let nextRight = this.state.puppies[increment(this.state.index.right, this.state.puppies)];
+		let nextLeft = this.state.porn[decrement(this.state.index.left, this.state.porn)];
+		let nextRight = this.state.porn[increment(this.state.index.right, this.state.porn)];
 
 		loadImage(getThumbnailURL(nextLeft));
 		loadImage(getThumbnailURL(nextRight));
@@ -90,12 +90,12 @@ class WatchPuppies extends React.Component {
 		if (increase) {
 			index.left = index.main;
 			index.main = index.right;
-			index.right = increment(index.right, this.state.puppies);
+			index.right = increment(index.right, this.state.porn);
 		}
 		else {
 			index.right = index.main;
 			index.main = index.left;
-			index.left = decrement(index.left, this.state.puppies);
+			index.left = decrement(index.left, this.state.porn);
 		}
 
 		this.setState({index});
@@ -107,18 +107,18 @@ class WatchPuppies extends React.Component {
 	}
 
 	render () {
-		if (this.state.puppies && this.state.index) {
+		if (this.state.porn && this.state.index) {
 
-			let puppy = <Puppy
-				data={this.state.puppies[this.state.index.main]}
+			let bufferImage = <BufferImage
+				data={this.state.porn[this.state.index.main]}
 				backgroundSize={this.state.backgroundSize}
 				transitionTime={TRANSITION_TIME}
 				onImageLoaded={this.setUpdateTimeout}
 				clickHandler={this.toggleHUD} />;
 
 			if (this.state.showHUD) {
-				let title = this.props.trimTitle ? this.state.puppies[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.puppies[this.state.index.main].title;
-				title = <h1 className="puppy-title">{title}</h1>;
+				let title = this.props.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
+				title = <h2 className="porn-start-title">{title}</h2>;
 
 				let settingsToggle = <button
 					className="mdl-button mdl-js-button mdl-button--icon settings-toggle"
@@ -128,33 +128,33 @@ class WatchPuppies extends React.Component {
 
 				let settings = this.state.showSettings ? <Modal onClick={this.toggleSettings} /> : null;
 
-				let runt = <Runt
-					data={this.state.puppies[this.state.index.main]}
+				let bufferThumbnail = <BufferThumbnail
+					data={this.state.porn[this.state.index.main]}
 					theDarkness={THE_DARKNESS}
 					transitionTime={TRANSITION_TIME / 2}
 					clickHandler={this.toggleBackgroundSize} />;
 
-				let prev = <Next
-					data={this.state.puppies[this.state.index.left]}
+				let prev = <BufferNext
+					data={this.state.porn[this.state.index.left]}
 					side="left"
 					theDarkness={THE_DARKNESS}
 					transitionTime={TRANSITION_TIME}
 					clickHandler={this.updateIndex.bind(this, false)} />;
 
-				let next = <Next
-					data={this.state.puppies[this.state.index.right]}
+				let next = <BufferNext
+					data={this.state.porn[this.state.index.right]}
 					side="right"
 					theDarkness={THE_DARKNESS}
 					transitionTime={TRANSITION_TIME}
 					clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
-					<div>{puppy}{settingsToggle}{settings}{title}{prev}{next}{runt}</div>
+					<div>{bufferImage}{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>
 				);
 			}
 			else {
 				return (
-					<div>{puppy}</div>
+					<div>{bufferImage}</div>
 				);
 			}
 		}
@@ -164,11 +164,11 @@ class WatchPuppies extends React.Component {
 	}
 }
 
-WatchPuppies.propTypes = {
+PornStart.propTypes = {
 	source:         React.PropTypes.string.isRequired,
 	backgroundSize: React.PropTypes.string,
 	showHUD:        React.PropTypes.bool,
 	trimTitle:      React.PropTypes.bool
 };
 
-export default WatchPuppies;
+export default PornStart;

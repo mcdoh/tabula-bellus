@@ -1,7 +1,7 @@
 import React from 'react';
 import {ONE_SECOND, loadImage, getImageURL} from './tools.js';
 
-class Puppy extends React.Component {
+class BufferImage extends React.Component {
 	constructor (props) {
 		super(props);
 
@@ -61,8 +61,8 @@ class Puppy extends React.Component {
 			transition: `opacity ${this.props.transitionTime/ONE_SECOND}s ease-in-out`
 		};
 
-		let primary = <div className="puppy" style={primaryStyle} onClick={this.props.clickHandler} />;
-		let next = <div className="puppy" style={nextImageStyle} onClick={this.props.clickHandler} />;
+		let primary = <div className="buffer-image" style={primaryStyle} onClick={this.props.clickHandler} />;
+		let next = <div className="buffer-image" style={nextImageStyle} onClick={this.props.clickHandler} />;
 
 		// we render 'primary' twice if there is no 'nextImage'
 		// otherwise when 'nextImage' becomes primary there's the css transition opacity rule
@@ -74,7 +74,7 @@ class Puppy extends React.Component {
 	}
 }
 
-Puppy.propTypes = {
+BufferImage.propTypes = {
 	data: React.PropTypes.object.isRequired,
 	backgroundSize: React.PropTypes.string,
 	theDarkness: React.PropTypes.number,
@@ -83,4 +83,4 @@ Puppy.propTypes = {
 	clickHandler: React.PropTypes.func.isRequired
 };
 
-export default Puppy;
+export default BufferImage;

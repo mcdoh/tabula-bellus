@@ -1,9 +1,9 @@
 import React from 'react';
-import Puppy from './puppy.jsx';
+import BufferImage from './bufferImage.jsx';
 
 import {ONE_SECOND, THUMBNAIL_INDEX, getThumbnailURL, isLandscape, aspectRatio} from './tools.js';
 
-class Runt extends Puppy {
+class BufferThumbnail extends BufferImage {
 	constructor (props) {
 		super(props);
 		this.getImageURL = getThumbnailURL;
@@ -20,12 +20,12 @@ class Runt extends Puppy {
 			transition: `opacity ${ this.props.transitionTime / ONE_SECOND }s ease`
 		};
 
-		let runt = <div className="runt" style={style} onClick={this.props.clickHandler} />;
+		let bufferThumbnail = <div className="buffer-thumbnail" style={style} onClick={this.props.clickHandler} />;
 
 		return (
-			<div>{runt}</div>
+			<div>{bufferThumbnail}</div>
 		);
 	}
 }
 
-export default Runt;
+export default BufferThumbnail;
