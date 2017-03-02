@@ -22,17 +22,22 @@ class PornStart extends React.Component {
 		super(props);
 
 		this.state = {
-			backgroundSize: props.backgroundSize,
-			showHUD: props.showHUD,
-			trimTitle: props.trimTitle,
+			source: 'earthporn',
+			backgroundSize: 'cover',
+			showHUD: true,
+			trimTitle: true,
 			showSettings: false
 		};
 
-		['toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateIndex', 'setUpdateTimeout']
+		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
 	componentDidMount () {
+		this.fetchData();
+	}
+
+	fetchData () {
 		fetch(urlTemplate(this.props.source))
 		.then(response => {
 			let contentType = response.headers.get('content-type');
@@ -40,11 +45,8 @@ class PornStart extends React.Component {
 				return response.json();
 			}
 		})
-		.then(json => {
-			this.parseData(json);
-			this.updateTO = setTimeout(this.updateIndex, UPDATE_INTERVAL);
-		})
-		.catch(error => console.error);
+		.then(this.parseData)
+		.catch(console.error);
 	}
 
 	parseData (data) {
@@ -121,12 +123,15 @@ class PornStart extends React.Component {
 				title = <h2 className="porn-start-title">{title}</h2>;
 
 				let settingsToggle = <button
-					className="mdl-button mdl-js-button mdl-button--icon settings-toggle"
+					className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
 					onClick={this.toggleSettings} >
 					<i className="material-icons">more_vert</i>
 				</button>;
 
-				let settings = this.state.showSettings ? <Modal onClick={this.toggleSettings} /> : null;
+				let settings = <Modal
+					show={this.state.showSettings}
+					source={this.state.source}
+					onClick={this.toggleSettings} />;
 
 				let bufferThumbnail = <BufferThumbnail
 					data={this.state.porn[this.state.index.main]}

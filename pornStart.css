@@ -23,6 +23,7 @@ body {
 	top: 1vh;
 	right: 1vh;
 	color: white;
+	text-shadow: 1px 1px 3px black;
 	z-index: 2;
 }
 
