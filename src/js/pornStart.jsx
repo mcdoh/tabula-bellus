@@ -8,10 +8,8 @@ import Modal from './modal.jsx';
 
 import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
 
-const TRIM_TITLE = /\s*\[.*\]\s*/g;
+const TRIM_TITLE = /\s*(\[.*\]|\(.*\))\s*/g;
 const THE_DARKNESS = 0.25;
-const TRANSITION_TIME = 2 * ONE_SECOND;
-const UPDATE_INTERVAL = 30 * ONE_SECOND;
 
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
@@ -22,11 +20,13 @@ class PornStart extends React.Component {
 		super(props);
 
 		this.state = {
-			source: 'earthporn',
 			backgroundSize: 'cover',
 			showHUD: true,
+			showSettings: false,
+			source: 'earthporn',
+			transitionTime: 2 * ONE_SECOND,
 			trimTitle: true,
-			showSettings: false
+			updateInterval: 30 * ONE_SECOND
 		};
 
 		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateIndex', 'setUpdateTimeout']
@@ -38,7 +38,7 @@ class PornStart extends React.Component {
 	}
 
 	fetchData () {
-		fetch(urlTemplate(this.props.source))
+		fetch(urlTemplate(this.state.source))
 		.then(response => {
 			let contentType = response.headers.get('content-type');
 			if (contentType && contentType.indexOf('application/json') !== -1) {
@@ -104,7 +104,7 @@ class PornStart extends React.Component {
 	}
 
 	setUpdateTimeout () {
-		this.updateTO = setTimeout(this.updateIndex, UPDATE_INTERVAL);
+		this.updateTO = setTimeout(this.updateIndex, this.state.updateInterval);
 		this.preloadThumbnails();
 	}
 
@@ -114,12 +114,12 @@ class PornStart extends React.Component {
 			let bufferImage = <BufferImage
 				data={this.state.porn[this.state.index.main]}
 				backgroundSize={this.state.backgroundSize}
-				transitionTime={TRANSITION_TIME}
+				transitionTime={this.state.transitionTime}
 				onImageLoaded={this.setUpdateTimeout}
 				clickHandler={this.toggleHUD} />;
 
 			if (this.state.showHUD) {
-				let title = this.props.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
+				let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
 				title = <h2 className="porn-start-title">{title}</h2>;
 
 				let settingsToggle = <button
@@ -136,21 +136,21 @@ class PornStart extends React.Component {
 				let bufferThumbnail = <BufferThumbnail
 					data={this.state.porn[this.state.index.main]}
 					theDarkness={THE_DARKNESS}
-					transitionTime={TRANSITION_TIME / 2}
+					transitionTime={this.state.transitionTime / 2}
 					clickHandler={this.toggleBackgroundSize} />;
 
 				let prev = <BufferNext
 					data={this.state.porn[this.state.index.left]}
 					side="left"
 					theDarkness={THE_DARKNESS}
-					transitionTime={TRANSITION_TIME}
+					transitionTime={this.state.transitionTime}
 					clickHandler={this.updateIndex.bind(this, false)} />;
 
 				let next = <BufferNext
 					data={this.state.porn[this.state.index.right]}
 					side="right"
 					theDarkness={THE_DARKNESS}
-					transitionTime={TRANSITION_TIME}
+					transitionTime={this.state.transitionTime}
 					clickHandler={this.updateIndex.bind(this, true)} />;
 
 				return (
