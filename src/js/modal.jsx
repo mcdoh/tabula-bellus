@@ -12,7 +12,7 @@ class Modal extends React.Component {
 			value: ''
 		};
 
-		['onSourceChange', 'handleChange', 'handleSubmit']
+		['onSourceChange', 'submitSource', 'handleKeyPress']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -24,13 +24,12 @@ class Modal extends React.Component {
 		this.setState({source: event.target.value});
 	}
 
-	handleChange (event) {
-		this.setState({value: event.target.value});
+	submitSource (event) {
+		this.props.updateSource(event.target.value);
 	}
 
-	handleSubmit (event) {
-		event.preventDefault();
-		this.props.updateSource(event.target.value);
+	handleKeyPress (event) {
+		if (event.key === 'Enter') this.submitSource(event);
 	}
 
 	render () {
@@ -49,6 +48,7 @@ class Modal extends React.Component {
 							className="mdl-textfield__input"
 							value={this.state.source}
 							onChange={this.onSourceChange}
+							onKeyPress={this.handleKeyPress}
 							onBlur={this.handleSubmit}
 						/>
 						<label className="mdl-textfield__label" htmlFor="settings-source">Source...</label>
