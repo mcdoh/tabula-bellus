@@ -37,7 +37,7 @@ class Modal extends React.Component {
 	sourceKeyPress (event) {
 		if (event.key === 'Enter') {
 			this.sourceSubmit(event);
-			this.props.onClick();
+			this.props.onSubmit();
 		}
 	}
 
@@ -46,10 +46,6 @@ class Modal extends React.Component {
 			<dialog id="dialog" className="mdl-dialog settings-modal" open={this.props.show}>
 				<h3 className="mdl-dialog__title">Settings</h3>
 				<div className="mdl-dialog__content">
-					<p>
-						This is an example of the Material Design Lite dialog component.
-						Please use responsibly.
-					</p>
 					<div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input
 							type="text"
@@ -62,12 +58,22 @@ class Modal extends React.Component {
 						/>
 						<label className="mdl-textfield__label" htmlFor="settings-source">Source...</label>
 					</div>
+					<label className="mdl-switch mdl-js-switch mdl-js-ripple-effect" htmlFor="settings-show-title">
+						<input
+							type="checkbox"
+							id="settings-show-title"
+							className="mdl-switch__input"
+							checked={this.state.showTitle}
+							onChange={this.props.toggleShowTitle}
+						/>
+						<span className="mdl-switch__label">Show Title</span>
+					</label>
 				</div>
 				<div className="mdl-dialog__actions">
 					<button
 						type="button"
 						className="mdl-button mdl-js-button mdl-js-ripple-effect"
-						onClick={this.props.onClick}>
+						onClick={this.props.onSubmit}>
 						Close
 					</button>
 				</div>
@@ -77,10 +83,11 @@ class Modal extends React.Component {
 }
 
 Modal.propTypes = {
-	onClick:      React.PropTypes.func.isRequired,
-	show:         React.PropTypes.bool.isRequired,
-	source:       React.PropTypes.string.isRequired,
-	updateSource: React.PropTypes.func.isRequired
+	onSubmit:         React.PropTypes.func.isRequired,
+	show:             React.PropTypes.bool.isRequired,
+	source:           React.PropTypes.string.isRequired,
+	updateSource:     React.PropTypes.func.isRequired,
+	toggleShowTitle:  React.PropTypes.func.isRequired
 };
 
 export default Modal;

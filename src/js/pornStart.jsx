@@ -23,13 +23,14 @@ class PornStart extends React.Component {
 			backgroundSize: 'cover',
 			showHUD: true,
 			showSettings: false,
+			showTitle: true,
 			source: 'earthporn',
 			transitionTime: 2 * ONE_SECOND,
 			trimTitle: true,
 			updateInterval: 30 * ONE_SECOND
 		};
 
-		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
+		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'toggleShowTitle', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -91,6 +92,10 @@ class PornStart extends React.Component {
 		}
 	}
 
+	toggleShowTitle () {
+		this.setState({showTitle: !this.state.showTitle});
+	}
+
 	preloadThumbnails () {
 		let nextLeft = this.state.porn[decrement(this.state.index.left, this.state.porn)];
 		let nextRight = this.state.porn[increment(this.state.index.right, this.state.porn)];
@@ -131,9 +136,14 @@ class PornStart extends React.Component {
 
 		let settings = <Modal
 			show={this.state.showSettings}
+
 			source={this.state.source}
 			updateSource={this.updateSource}
-			onClick={this.toggleSettings}
+
+			showTitle={this.state.showTitle}
+			toggleShowTitle={this.toggleShowTitle}
+
+			onSubmit={this.toggleSettings}
 			/>;
 
 		if (this.state.porn && this.state.index) {
@@ -147,7 +157,7 @@ class PornStart extends React.Component {
 
 			if (this.state.showHUD) {
 				let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
-				title = <h2 className="porn-start-title">{title}</h2>;
+				title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
 
 				let bufferThumbnail = <BufferThumbnail
 					data={this.state.porn[this.state.index.main]}
