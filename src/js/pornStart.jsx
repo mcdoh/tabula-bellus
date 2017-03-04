@@ -42,7 +42,7 @@ class PornStart extends React.Component {
 		.then(response => {
 			let contentType = response.headers.get('content-type');
 			if (contentType && contentType.indexOf('application/json') !== -1) {
-				this.setState({source});
+				this.setState({newSource: source});
 				return response.json();
 			}
 		})
@@ -54,16 +54,18 @@ class PornStart extends React.Component {
 
 		let porn = data.data.children
 		.map(child => child.data)
-		.filter(child => (child.post_hint === 'link' || child.post_hint === 'image') && !(child.is_self || child.locked || child.stickied));
+		.filter(child => child.post_hint && (child.post_hint === 'link' || child.post_hint === 'image') && !(child.is_self || child.locked || child.stickied));
 
-		let i = rand(0, porn.length);
-		let index = {
-			main: i,
-			left: decrement(i, porn),
-			right: increment(i, porn)
-		};
+		if (porn.length) {
+			let i = rand(0, porn.length);
+			let index = {
+				main: i,
+				left: decrement(i, porn),
+				right: increment(i, porn)
+			};
 
-		this.setState({index, porn});
+			this.setState({index, porn, source: this.state.newSource});
+		}
 	}
 
 	toggleBackgroundSize () {
@@ -121,6 +123,19 @@ class PornStart extends React.Component {
 	}
 
 	render () {
+		let settingsToggle = <button
+			className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
+			onClick={this.toggleSettings} >
+			<i className="material-icons">more_vert</i>
+			</button>;
+
+		let settings = <Modal
+			show={this.state.showSettings}
+			source={this.state.source}
+			updateSource={this.updateSource}
+			onClick={this.toggleSettings}
+			/>;
+
 		if (this.state.porn && this.state.index) {
 
 			let bufferImage = <BufferImage
@@ -134,37 +149,28 @@ class PornStart extends React.Component {
 				let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
 				title = <h2 className="porn-start-title">{title}</h2>;
 
-				let settingsToggle = <button
-					className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
-					onClick={this.toggleSettings} >
-					<i className="material-icons">more_vert</i>
-				</button>;
-
-				let settings = <Modal
-					show={this.state.showSettings}
-					source={this.state.source}
-					updateSource={this.updateSource}
-					onClick={this.toggleSettings} />;
-
 				let bufferThumbnail = <BufferThumbnail
 					data={this.state.porn[this.state.index.main]}
 					theDarkness={THE_DARKNESS}
 					transitionTime={this.state.transitionTime / 2}
-					clickHandler={this.toggleBackgroundSize} />;
+					clickHandler={this.toggleBackgroundSize}
+					/>;
 
 				let prev = <BufferNext
 					data={this.state.porn[this.state.index.left]}
 					side="left"
 					theDarkness={THE_DARKNESS}
 					transitionTime={this.state.transitionTime}
-					clickHandler={this.updateIndex.bind(this, false)} />;
+					clickHandler={this.updateIndex.bind(this, false)}
+					/>;
 
 				let next = <BufferNext
 					data={this.state.porn[this.state.index.right]}
 					side="right"
 					theDarkness={THE_DARKNESS}
 					transitionTime={this.state.transitionTime}
-					clickHandler={this.updateIndex.bind(this, true)} />;
+					clickHandler={this.updateIndex.bind(this, true)}
+					/>;
 
 				return (
 					<div>{bufferImage}{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>
@@ -177,7 +183,7 @@ class PornStart extends React.Component {
 			}
 		}
 		else {
-			return <div />;
+			return <div>{settingsToggle}{settings}</div>;
 		}
 	}
 }

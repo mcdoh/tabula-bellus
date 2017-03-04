@@ -15,10 +15,10 @@ class BufferImage extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps (newProps) {
-		if (newProps.data.id !== this.props.data.id) {
+	componentWillReceiveProps (props) {
+		if (props.data.id !== this.props.data.id) {
 			clearTimeout(this.transitionTO);
-			this.loadNext(newProps.data);
+			this.loadNext(props.data);
 		}
 	}
 

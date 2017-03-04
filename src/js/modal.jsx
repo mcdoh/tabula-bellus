@@ -20,6 +20,12 @@ class Modal extends React.Component {
 		componentHandler.upgradeDom();
 	}
 
+	componentWillReceiveProps (props) {
+		if (props.source !== this.state.source) {
+			this.setState({source: props.source});
+		}
+	}
+
 	onSourceChange (event) {
 		this.setState({source: event.target.value});
 	}
@@ -29,7 +35,10 @@ class Modal extends React.Component {
 	}
 
 	handleKeyPress (event) {
-		if (event.key === 'Enter') this.submitSource(event);
+		if (event.key === 'Enter') {
+			this.submitSource(event);
+			this.props.onClick();
+		}
 	}
 
 	render () {
