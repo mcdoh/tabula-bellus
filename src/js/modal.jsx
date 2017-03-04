@@ -30,6 +30,7 @@ class Modal extends React.Component {
 
 	handleSubmit (event) {
 		event.preventDefault();
+		this.props.updateSource(event.target.value);
 	}
 
 	render () {
@@ -41,19 +42,17 @@ class Modal extends React.Component {
 						This is an example of the Material Design Lite dialog component.
 						Please use responsibly.
 					</p>
-					<form action="#">
-						<div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-							<input
-								type="text"
-								id="settings-source"
-								className="mdl-textfield__input"
-								value={this.state.source}
-								onChange={this.onSourceChange}
-								onBlur={this.handleSubmit}
-							/>
-							<label className="mdl-textfield__label" htmlFor="settings-source">Source...</label>
-						</div>
-					</form>
+					<div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<input
+							type="text"
+							id="settings-source"
+							className="mdl-textfield__input"
+							value={this.state.source}
+							onChange={this.onSourceChange}
+							onBlur={this.handleSubmit}
+						/>
+						<label className="mdl-textfield__label" htmlFor="settings-source">Source...</label>
+					</div>
 				</div>
 				<div className="mdl-dialog__actions">
 					<button
@@ -69,9 +68,10 @@ class Modal extends React.Component {
 }
 
 Modal.propTypes = {
-	onClick: React.PropTypes.func.isRequired,
-	show: React.PropTypes.bool.isRequired,
-	source: React.PropTypes.string.isRequired
+	onClick:      React.PropTypes.func.isRequired,
+	show:         React.PropTypes.bool.isRequired,
+	source:       React.PropTypes.string.isRequired,
+	updateSource: React.PropTypes.func.isRequired
 };
 
 export default Modal;

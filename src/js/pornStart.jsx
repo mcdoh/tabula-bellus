@@ -29,7 +29,7 @@ class PornStart extends React.Component {
 			updateInterval: 30 * ONE_SECOND
 		};
 
-		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateIndex', 'setUpdateTimeout']
+		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -37,11 +37,12 @@ class PornStart extends React.Component {
 		this.fetchData();
 	}
 
-	fetchData () {
-		fetch(urlTemplate(this.state.source))
+	fetchData (source = this.state.source) {
+		fetch(urlTemplate(source))
 		.then(response => {
 			let contentType = response.headers.get('content-type');
 			if (contentType && contentType.indexOf('application/json') !== -1) {
+				this.setState({source});
 				return response.json();
 			}
 		})
@@ -70,11 +71,22 @@ class PornStart extends React.Component {
 	}
 
 	toggleHUD () {
-		this.setState({showHUD: !this.state.showHUD});
+		if (this.state.showSettings) {
+			this.toggleSettings();
+		}
+		else {
+			this.setState({showHUD: !this.state.showHUD});
+		}
 	}
 
 	toggleSettings () {
 		this.setState({showSettings: !this.state.showSettings});
+	}
+
+	updateSource (source) {
+		if (source !== this.state.source) {
+			this.fetchData(source);
+		}
 	}
 
 	preloadThumbnails () {
@@ -131,6 +143,7 @@ class PornStart extends React.Component {
 				let settings = <Modal
 					show={this.state.showSettings}
 					source={this.state.source}
+					updateSource={this.updateSource}
 					onClick={this.toggleSettings} />;
 
 				let bufferThumbnail = <BufferThumbnail
