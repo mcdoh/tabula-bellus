@@ -63,10 +63,20 @@ class Modal extends React.Component {
 							type="checkbox"
 							id="settings-show-title"
 							className="mdl-switch__input"
-							checked={this.state.showTitle}
+							checked={this.props.showTitle}
 							onChange={this.props.toggleShowTitle}
 						/>
 						<span className="mdl-switch__label">Show Title</span>
+					</label>
+					<label className="mdl-switch mdl-js-switch mdl-js-ripple-effect" htmlFor="settings-show-thumbnail">
+						<input
+							type="checkbox"
+							id="settings-show-thumbnail"
+							className="mdl-switch__input"
+							checked={this.props.showThumbnail}
+							onChange={this.props.toggleShowThumbnail}
+						/>
+						<span className="mdl-switch__label">Show Thumbnail</span>
 					</label>
 				</div>
 				<div className="mdl-dialog__actions">
@@ -83,11 +93,14 @@ class Modal extends React.Component {
 }
 
 Modal.propTypes = {
-	onSubmit:         React.PropTypes.func.isRequired,
-	show:             React.PropTypes.bool.isRequired,
-	source:           React.PropTypes.string.isRequired,
-	updateSource:     React.PropTypes.func.isRequired,
-	toggleShowTitle:  React.PropTypes.func.isRequired
+	onSubmit:             React.PropTypes.func.isRequired,
+	show:                 React.PropTypes.bool.isRequired,
+	source:               React.PropTypes.string.isRequired,
+	updateSource:         React.PropTypes.func.isRequired,
+	showTitle:            React.PropTypes.bool,
+	toggleShowTitle:      React.PropTypes.func.isRequired,
+	showThumbnail:        React.PropTypes.bool,
+	toggleShowThumbnail:  React.PropTypes.func.isRequired
 };
 
 export default Modal;

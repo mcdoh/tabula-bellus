@@ -22,6 +22,7 @@ class PornStart extends React.Component {
 		this.state = {
 			backgroundSize: 'cover',
 			showHUD: true,
+			showThumbnail: true,
 			showSettings: false,
 			showTitle: true,
 			source: 'earthporn',
@@ -30,7 +31,7 @@ class PornStart extends React.Component {
 			updateInterval: 30 * ONE_SECOND
 		};
 
-		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'toggleShowTitle', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
+		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'toggleShowThumbnail', 'toggleShowTitle', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -92,6 +93,10 @@ class PornStart extends React.Component {
 		}
 	}
 
+	toggleShowThumbnail () {
+		this.setState({showThumbnail: !this.state.showThumbnail});
+	}
+
 	toggleShowTitle () {
 		this.setState({showTitle: !this.state.showTitle});
 	}
@@ -140,6 +145,9 @@ class PornStart extends React.Component {
 			source={this.state.source}
 			updateSource={this.updateSource}
 
+			showThumbnail={this.state.showThumbnail}
+			toggleShowThumbnail={this.toggleShowThumbnail}
+
 			showTitle={this.state.showTitle}
 			toggleShowTitle={this.toggleShowTitle}
 
@@ -159,12 +167,12 @@ class PornStart extends React.Component {
 				let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
 				title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
 
-				let bufferThumbnail = <BufferThumbnail
+				let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
 					data={this.state.porn[this.state.index.main]}
 					theDarkness={THE_DARKNESS}
 					transitionTime={this.state.transitionTime / 2}
 					clickHandler={this.toggleBackgroundSize}
-					/>;
+					/> : null;
 
 				let prev = <BufferNext
 					data={this.state.porn[this.state.index.left]}
