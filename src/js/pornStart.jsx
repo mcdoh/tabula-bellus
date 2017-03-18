@@ -5,11 +5,24 @@ import BufferThumbnail from './bufferThumbnail.jsx';
 import BufferNext from './bufferNext.jsx';
 
 import Modal from './modal.jsx';
+import LocalDB from './localDB.js';
 
-import {ONE_SECOND, loadImage, getThumbnailURL, increment, decrement, rand} from './tools.js';
+import {ONE_SECOND, decrement, getThumbnailURL, increment, loadImage, notEmpty, rand} from './tools.js';
 
 const TRIM_TITLE = /\s*(\[.*\]|\(.*\))\s*/g;
 const THE_DARKNESS = 0.25;
+
+const DEFAULT_STATE = {
+	backgroundSize: 'cover',
+	showHUD: true,
+	showThumbnail: true,
+	showSettings: false,
+	showTitle: true,
+	source: 'earthporn',
+	transitionTime: 2 * ONE_SECOND,
+	trimTitle: true,
+	updateInterval: 30 * ONE_SECOND
+};
 
 function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
@@ -19,24 +32,30 @@ class PornStart extends React.Component {
 	constructor (props) {
 		super(props);
 
-		this.state = {
-			backgroundSize: 'cover',
-			showHUD: true,
-			showThumbnail: true,
-			showSettings: false,
-			showTitle: true,
-			source: 'earthporn',
-			transitionTime: 2 * ONE_SECOND,
-			trimTitle: true,
-			updateInterval: 30 * ONE_SECOND
-		};
+		this.state = {};
 
 		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'toggleShowThumbnail', 'toggleShowTitle', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
 		.map(method => this[method] = this[method].bind(this));
-	}
 
-	componentDidMount () {
-		this.fetchData();
+		this.db = new LocalDB({
+			db: 'pornStart',
+			version: 7,
+			stores: [{
+				name: 'settings',
+				key: {autoIncrement: true},
+				upgrade: data => {
+					console.debug(' old data', data);
+					return Object.assign({}, DEFAULT_STATE, data);
+				}
+			}],
+			ready: () => {
+				console.debug('READY!');
+				this.db.getData('settings', settings => {
+					console.debug(settings);
+					this.setState(settings, this.fetchData);
+				});
+			}
+		});
 	}
 
 	fetchData (source = this.state.source) {
@@ -66,12 +85,22 @@ class PornStart extends React.Component {
 				right: increment(i, porn)
 			};
 
-			this.setState({index, porn, source: this.state.newSource});
+			this.setState({
+				index,
+				porn,
+				source: this.state.newSource
+			}, () => this.db.storeData('settings', {
+				source: this.state.source
+			}));
 		}
 	}
 
 	toggleBackgroundSize () {
-		this.setState({backgroundSize: this.state.backgroundSize === 'cover' ? 'contain' : 'cover'});
+		this.setState({
+			backgroundSize: this.state.backgroundSize === 'cover' ? 'contain' : 'cover'
+		}, () => this.db.storeData('settings', {
+			backgroundSize: this.state.backgroundSize
+		}));
 	}
 
 	toggleHUD () {
@@ -79,12 +108,20 @@ class PornStart extends React.Component {
 			this.toggleSettings();
 		}
 		else {
-			this.setState({showHUD: !this.state.showHUD});
+			this.setState({
+				showHUD: !this.state.showHUD
+			}, () => this.db.storeData('settings', {
+				showHUD: this.state.showHUD
+			}));
 		}
 	}
 
 	toggleSettings () {
-		this.setState({showSettings: !this.state.showSettings});
+		this.setState({
+			showSettings: !this.state.showSettings
+		}, () => this.db.storeData('settings', {
+			showSettings: this.state.showSettings
+		}));
 	}
 
 	updateSource (source) {
@@ -94,11 +131,19 @@ class PornStart extends React.Component {
 	}
 
 	toggleShowThumbnail () {
-		this.setState({showThumbnail: !this.state.showThumbnail});
+		this.setState({
+			showThumbnail: !this.state.showThumbnail
+		}, () => this.db.storeData('settings', {
+			showThumbnail: this.state.showThumbnail
+		}));
 	}
 
 	toggleShowTitle () {
-		this.setState({showTitle: !this.state.showTitle});
+		this.setState({
+			showTitle: !this.state.showTitle
+		}, () => this.db.storeData('settings', {
+			showTitle: this.state.showTitle
+		}));
 	}
 
 	preloadThumbnails () {
@@ -133,81 +178,86 @@ class PornStart extends React.Component {
 	}
 
 	render () {
-		let settingsToggle = <button
-			className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
-			onClick={this.toggleSettings} >
-			<i className="material-icons">more_vert</i>
-			</button>;
+		if (notEmpty(this.state)) {
+			let settingsToggle = <button
+				className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
+				onClick={this.toggleSettings} >
+				<i className="material-icons">more_vert</i>
+				</button>;
 
-		let settings = <Modal
-			show={this.state.showSettings}
+			let settings = <Modal
+				show={this.state.showSettings}
 
-			source={this.state.source}
-			updateSource={this.updateSource}
+				source={this.state.source}
+				updateSource={this.updateSource}
 
-			showThumbnail={this.state.showThumbnail}
-			toggleShowThumbnail={this.toggleShowThumbnail}
+				showThumbnail={this.state.showThumbnail}
+				toggleShowThumbnail={this.toggleShowThumbnail}
 
-			showTitle={this.state.showTitle}
-			toggleShowTitle={this.toggleShowTitle}
+				showTitle={this.state.showTitle}
+				toggleShowTitle={this.toggleShowTitle}
 
-			onSubmit={this.toggleSettings}
-			/>;
+				onSubmit={this.toggleSettings}
+				/>;
 
-		if (this.state.porn && this.state.index) {
+			if (this.state.porn && this.state.index) {
 
-			let bufferImage = <BufferImage
-				data={this.state.porn[this.state.index.main]}
-				backgroundSize={this.state.backgroundSize}
-				transitionTime={this.state.transitionTime}
-				onImageLoaded={this.setUpdateTimeout}
-				clickHandler={this.toggleHUD} />;
-
-			if (this.state.showHUD) {
-				let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
-				title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
-
-				let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
+				let bufferImage = <BufferImage
 					data={this.state.porn[this.state.index.main]}
-					theDarkness={THE_DARKNESS}
-					transitionTime={this.state.transitionTime / 2}
-					clickHandler={this.toggleBackgroundSize}
-					/> : null;
-
-				let prev = <BufferNext
-					data={this.state.porn[this.state.index.left]}
-					side="left"
-					theDarkness={THE_DARKNESS}
+					backgroundSize={this.state.backgroundSize}
 					transitionTime={this.state.transitionTime}
-					clickHandler={this.updateIndex.bind(this, false)}
-					/>;
+					onImageLoaded={this.setUpdateTimeout}
+					clickHandler={this.toggleHUD} />;
 
-				let next = <BufferNext
-					data={this.state.porn[this.state.index.right]}
-					side="right"
-					theDarkness={THE_DARKNESS}
-					transitionTime={this.state.transitionTime}
-					clickHandler={this.updateIndex.bind(this, true)}
-					/>;
+				if (this.state.showHUD) {
+					let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
+					title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
 
-				return (
-					<div>{bufferImage}{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>
-				);
+					let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
+						data={this.state.porn[this.state.index.main]}
+						theDarkness={THE_DARKNESS}
+						transitionTime={this.state.transitionTime / 2}
+						clickHandler={this.toggleBackgroundSize}
+						/> : null;
+
+					let prev = <BufferNext
+						data={this.state.porn[this.state.index.left]}
+						side="left"
+						theDarkness={THE_DARKNESS}
+						transitionTime={this.state.transitionTime}
+						clickHandler={this.updateIndex.bind(this, false)}
+						/>;
+
+					let next = <BufferNext
+						data={this.state.porn[this.state.index.right]}
+						side="right"
+						theDarkness={THE_DARKNESS}
+						transitionTime={this.state.transitionTime}
+						clickHandler={this.updateIndex.bind(this, true)}
+						/>;
+
+					return (
+						<div>{bufferImage}{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>
+					);
+				}
+				else {
+					return (
+						<div>{bufferImage}</div>
+					);
+				}
 			}
 			else {
-				return (
-					<div>{bufferImage}</div>
-				);
+				return <div>{settingsToggle}{settings}</div>;
 			}
 		}
 		else {
-			return <div>{settingsToggle}{settings}</div>;
+			return <div>Loading...</div>;
 		}
 	}
 }
 
 PornStart.propTypes = {
-	source:         React.PropTypes.string.isRequired,
+	source:         React.PropTypes.string,
 	backgroundSize: React.PropTypes.string,
 	showHUD:        React.PropTypes.bool,
 	trimTitle:      React.PropTypes.bool

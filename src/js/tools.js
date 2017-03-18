@@ -77,3 +77,19 @@ export function loadImage (imageURL) {
 	});
 }
 
+export function forEach (obj, iteratee) {
+	if (Array.isArray(obj)) {
+		obj.forEach(iteratee);
+	}
+	else {
+		for (let key in obj) {
+			iteratee(obj[key], key, obj);
+		}
+	}
+
+	return obj;
+}
+
+export function notEmpty (obj) {
+	return obj && Object.keys(obj).length;
+}
