@@ -14,7 +14,7 @@ import LocalDB from './localDB.js';
 
 import {ONE_SECOND, decrement, getThumbnailURL, increment, loadImage, notEmpty, rand} from './tools.js';
 
-const TRIM_TITLE = /\s*(\[.*\]|\(.*\))\s*/g;
+const TRIM_TITLE = /\s*(\[.*?\]|\(.*?\))\s*/g;
 const THE_DARKNESS = 0.25;
 
 const DEFAULT_STATE = {
@@ -24,9 +24,9 @@ const DEFAULT_STATE = {
 	showSettings: false,
 	showTitle: true,
 	source: 'earthporn',
-	transitionTime: 2 * ONE_SECOND,
+	transitionTime: 2,
 	trimTitle: true,
-	updateInterval: 30 * ONE_SECOND
+	imageTime: 30
 };
 
 function urlTemplate (source) {
@@ -47,6 +47,7 @@ class PornStart extends React.Component {
 			'toggleSettings',
 			'toggleBackgroundSize',
 			'updateSource',
+			'updateImageTime',
 			'toggleShowThumbnail',
 			'toggleShowTitle',
 			'toggleTrimTitle',
@@ -58,7 +59,7 @@ class PornStart extends React.Component {
 
 		this.db = new LocalDB({
 			db: 'pornStart',
-			version: 7,
+			version: 1,
 			stores: [{
 				name: 'settings',
 				key: {autoIncrement: true},
@@ -136,10 +137,24 @@ class PornStart extends React.Component {
 		this.setState({showSettings: !this.state.showSettings});
 	}
 
-	updateSource (source) {
+	updateSource (source, submit) {
 		if (source !== this.state.source) {
 			this.fetchData(source);
 		}
+
+		if (submit) this.toggleSettings();
+	}
+
+	updateImageTime (imageTime, submit) {
+		imageTime = parseInt(imageTime);
+		if (imageTime) {
+			this.setState({imageTime}, () => {
+				this.db.storeData('settings', {imageTime: this.state.imageTime});
+				this.setUpdateTimeout();
+			});
+		}
+
+		if (submit) this.toggleSettings();
 	}
 
 	toggleShowThumbnail () {
@@ -193,7 +208,8 @@ class PornStart extends React.Component {
 	}
 
 	setUpdateTimeout () {
-		this.updateTO = setTimeout(this.updateIndex, this.state.updateInterval);
+		clearTimeout(this.updateTO);
+		this.updateTO = setTimeout(this.updateIndex, this.state.imageTime * ONE_SECOND);
 		this.preloadThumbnails();
 	}
 
@@ -212,6 +228,16 @@ class PornStart extends React.Component {
 				label="Source..."
 				value={this.state.source}
 				update={this.updateSource}
+			/>;
+
+			let imageTimeTextfield = <TextfieldMDL
+				key="textfield-image-time"
+				id="textfield-image-time"
+				label="Image Time..."
+				pattern="\d+"
+				error="Please enter a number in seconds"
+				value={String(this.state.imageTime)}
+				update={this.updateImageTime}
 			/>;
 
 			let thumbnailSwitch = <SwitchMDL
@@ -241,7 +267,7 @@ class PornStart extends React.Component {
 			let settings = <ModalMDL
 				id="dialog"
 				show={this.state.showSettings}
-				children={[sourceTextfield, thumbnailSwitch, titleSwitch, trimTitleSwitch]}
+				children={[sourceTextfield, imageTimeTextfield, thumbnailSwitch, titleSwitch, trimTitleSwitch]}
 				onSubmit={this.toggleSettings}
 			/>;
 
@@ -250,7 +276,7 @@ class PornStart extends React.Component {
 				let bufferImage = <BufferImage
 					data={this.state.porn[this.state.index.main]}
 					backgroundSize={this.state.backgroundSize}
-					transitionTime={this.state.transitionTime}
+					transitionTime={this.state.transitionTime * ONE_SECOND}
 					onImageLoaded={this.setUpdateTimeout}
 					clickHandler={this.toggleHUD} />;
 
@@ -264,7 +290,7 @@ class PornStart extends React.Component {
 					let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
 						data={this.state.porn[this.state.index.main]}
 						theDarkness={THE_DARKNESS}
-						transitionTime={this.state.transitionTime / 2}
+						transitionTime={this.state.transitionTime * ONE_SECOND / 2}
 						clickHandler={this.toggleBackgroundSize}
 						/> : null;
 
@@ -272,7 +298,7 @@ class PornStart extends React.Component {
 						data={this.state.porn[this.state.index.left]}
 						side="left"
 						theDarkness={THE_DARKNESS}
-						transitionTime={this.state.transitionTime}
+						transitionTime={this.state.transitionTime * ONE_SECOND}
 						clickHandler={this.updateIndex.bind(this, false)}
 						/>;
 
@@ -280,7 +306,7 @@ class PornStart extends React.Component {
 						data={this.state.porn[this.state.index.right]}
 						side="right"
 						theDarkness={THE_DARKNESS}
-						transitionTime={this.state.transitionTime}
+						transitionTime={this.state.transitionTime * ONE_SECOND}
 						clickHandler={this.updateIndex.bind(this, true)}
 						/>;
 

@@ -10,11 +10,10 @@ class TextfieldMDL extends React.Component {
 
 		this.state = {
 			id: props.id || rand(1000000),
-			value: props.value,
-			label: props.label
+			value: props.value
 		};
 
-		['onChange', 'submit', 'keyPress']
+		['onChange', 'update', 'keyPress']
 		.map(method => this[method] = this[method].bind(this));
 	}
 
@@ -32,18 +31,19 @@ class TextfieldMDL extends React.Component {
 		this.setState({value: event.target.value});
 	}
 
-	submit (event) {
-		this.props.update(event.target.value);
+	update (event, submit = false) {
+		this.props.update(event.target.value, submit);
 	}
 
 	keyPress (event) {
 		if (event.key === 'Enter') {
-			this.submit(event);
+			this.update(event, true);
 		}
 	}
 
 	render () {
-		let label = this.state.label ? <label className="mdl-textfield__label" htmlFor={this.state.id}>{this.state.label}</label> : null;
+		let label = this.props.label ? <label className="mdl-textfield__label" htmlFor={this.state.id}>{this.props.label}</label> : null;
+		let error = this.props.error ? <span className="mdl-textfield__error">{this.props.error}</span> : null;
 
 		return (
 			<div
@@ -54,11 +54,13 @@ class TextfieldMDL extends React.Component {
 					id={this.state.id}
 					className="mdl-textfield__input"
 					value={this.state.value}
+					pattern={this.props.pattern}
 					onChange={this.onChange}
 					onKeyPress={this.keyPress}
-					onBlur={this.submit}
+					onBlur={this.update}
 				/>
 				{label}
+				{error}
 			</div>
 		);
 	}
@@ -66,7 +68,9 @@ class TextfieldMDL extends React.Component {
 
 TextfieldMDL.propTypes = {
 	id:      React.PropTypes.string,
+	error:   React.PropTypes.string,
 	label:   React.PropTypes.string,
+	pattern: React.PropTypes.string,
 	update:  React.PropTypes.func.isRequired,
 	value:   React.PropTypes.string
 };
