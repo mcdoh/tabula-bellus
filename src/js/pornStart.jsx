@@ -4,7 +4,10 @@ import BufferImage from './bufferImage.jsx';
 import BufferThumbnail from './bufferThumbnail.jsx';
 import BufferNext from './bufferNext.jsx';
 
-import Modal from './modal.jsx';
+import ModalMDL from './modalMDL.jsx';
+import SwitchMDL from './switchMDL.jsx';
+import TextfieldMDL from './textfieldMDL.jsx';
+
 import LocalDB from './localDB.js';
 
 import {ONE_SECOND, decrement, getThumbnailURL, increment, loadImage, notEmpty, rand} from './tools.js';
@@ -180,25 +183,42 @@ class PornStart extends React.Component {
 	render () {
 		if (notEmpty(this.state)) {
 			let settingsToggle = <button
+				ref={button => button ? (componentHandler.upgradeElement(button)) : null}
 				className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
 				onClick={this.toggleSettings} >
 				<i className="material-icons">more_vert</i>
 				</button>;
 
-			let settings = <Modal
+			let sourceTextfield = <TextfieldMDL
+				key="textfield-source"
+				id="textfield-source"
+				label="Source..."
+				value={this.state.source}
+				update={this.updateSource}
+			/>;
+
+			let thumbnailSwitch = <SwitchMDL
+				key="switch-thumbnail"
+				id="switch-thumbnail"
+				label="Show Thumbnail"
+				checked={this.state.showThumbnail}
+				toggle={this.toggleShowThumbnail}
+			/>;
+
+			let titleSwitch = <SwitchMDL
+				key="switch-title"
+				id="switch-title"
+				label="Show Title"
+				checked={this.state.showTitle}
+				toggle={this.toggleShowTitle}
+			/>;
+
+			let settings = <ModalMDL
+				id="dialog"
 				show={this.state.showSettings}
-
-				source={this.state.source}
-				updateSource={this.updateSource}
-
-				showThumbnail={this.state.showThumbnail}
-				toggleShowThumbnail={this.toggleShowThumbnail}
-
-				showTitle={this.state.showTitle}
-				toggleShowTitle={this.toggleShowTitle}
-
+				children={[sourceTextfield, thumbnailSwitch, titleSwitch]}
 				onSubmit={this.toggleSettings}
-				/>;
+			/>;
 
 			if (this.state.porn && this.state.index) {
 
