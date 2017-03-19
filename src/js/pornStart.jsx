@@ -106,9 +106,10 @@ class PornStart extends React.Component {
 				index,
 				porn,
 				source: this.state.newSource
-			}, () => this.db.storeData('settings', {
-				source: this.state.source
-			}));
+			}, () => {
+				this.db.storeData('settings', {source: this.state.source});
+				this.setUpdateTimeout();
+			});
 		}
 	}
 
