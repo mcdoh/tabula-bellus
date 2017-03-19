@@ -1,3 +1,5 @@
+/* global componentHandler:true */
+
 import React from 'react';
 
 import BufferImage from './bufferImage.jsx';
@@ -37,8 +39,22 @@ class PornStart extends React.Component {
 
 		this.state = {};
 
-		['fetchData', 'parseData', 'toggleBackgroundSize', 'toggleHUD', 'toggleSettings', 'updateSource', 'toggleShowThumbnail', 'toggleShowTitle', 'preloadThumbnails', 'updateIndex', 'setUpdateTimeout']
-		.map(method => this[method] = this[method].bind(this));
+		[
+			'fetchData',
+			'parseData',
+
+			'toggleHUD',
+			'toggleSettings',
+			'toggleBackgroundSize',
+			'updateSource',
+			'toggleShowThumbnail',
+			'toggleShowTitle',
+			'toggleTrimTitle',
+
+			'preloadThumbnails',
+			'updateIndex',
+			'setUpdateTimeout'
+		].map(method => this[method] = this[method].bind(this));
 
 		this.db = new LocalDB({
 			db: 'pornStart',
@@ -47,14 +63,11 @@ class PornStart extends React.Component {
 				name: 'settings',
 				key: {autoIncrement: true},
 				upgrade: data => {
-					console.debug(' old data', data);
 					return Object.assign({}, DEFAULT_STATE, data);
 				}
 			}],
 			ready: () => {
-				console.debug('READY!');
 				this.db.getData('settings', settings => {
-					console.debug(settings);
 					this.setState(settings, this.fetchData);
 				});
 			}
@@ -120,11 +133,7 @@ class PornStart extends React.Component {
 	}
 
 	toggleSettings () {
-		this.setState({
-			showSettings: !this.state.showSettings
-		}, () => this.db.storeData('settings', {
-			showSettings: this.state.showSettings
-		}));
+		this.setState({showSettings: !this.state.showSettings});
 	}
 
 	updateSource (source) {
@@ -146,6 +155,14 @@ class PornStart extends React.Component {
 			showTitle: !this.state.showTitle
 		}, () => this.db.storeData('settings', {
 			showTitle: this.state.showTitle
+		}));
+	}
+
+	toggleTrimTitle () {
+		this.setState({
+			trimTitle: !this.state.trimTitle
+		}, () => this.db.storeData('settings', {
+			trimTitle: this.state.trimTitle
 		}));
 	}
 
@@ -213,10 +230,18 @@ class PornStart extends React.Component {
 				toggle={this.toggleShowTitle}
 			/>;
 
+			let trimTitleSwitch = <SwitchMDL
+				key="switch-trim-title"
+				id="switch-trim-title"
+				label="Trim Title"
+				checked={this.state.trimTitle}
+				toggle={this.toggleTrimTitle}
+			/>;
+
 			let settings = <ModalMDL
 				id="dialog"
 				show={this.state.showSettings}
-				children={[sourceTextfield, thumbnailSwitch, titleSwitch]}
+				children={[sourceTextfield, thumbnailSwitch, titleSwitch, trimTitleSwitch]}
 				onSubmit={this.toggleSettings}
 			/>;
 
@@ -230,7 +255,10 @@ class PornStart extends React.Component {
 					clickHandler={this.toggleHUD} />;
 
 				if (this.state.showHUD) {
-					let title = this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') : this.state.porn[this.state.index.main].title;
+					let title = this.state.porn[this.state.index.main].title ? this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') :
+						this.state.porn[this.state.index.main].title :
+						'';
+
 					title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
 
 					let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
@@ -267,11 +295,17 @@ class PornStart extends React.Component {
 				}
 			}
 			else {
-				return <div>{settingsToggle}{settings}</div>;
+				return (
+					<div>
+						{settingsToggle}
+						{settings}
+						<div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+					</div>
+				);
 			}
 		}
 		else {
-			return <div>Loading...</div>;
+			return <div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-js-spinner is-active"></div>;
 		}
 	}
 }

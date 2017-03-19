@@ -2,7 +2,7 @@ import {forEach} from './tools.js';
 
 const READ_ONLY = 'readonly';
 const READ_WRITE = 'readwrite';
-const VERSION_CHANGE = 'versionchange';
+// const VERSION_CHANGE = 'versionchange';
 
 const DEFAULT_SETTINGS = {
 	ready: () => {},
