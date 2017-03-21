@@ -311,8 +311,10 @@ class PornStart extends React.Component {
 						clickHandler={this.updateIndex.bind(this, true)}
 						/>;
 
+					let hud = <div className="hud">{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>;
+
 					return (
-						<div>{bufferImage}{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>
+						<div>{bufferImage}{hud}</div>
 					);
 				}
 				else {
