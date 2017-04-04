@@ -20,6 +20,7 @@ const THE_DARKNESS = 0.25;
 const DEFAULT_STATE = {
 	backgroundSize: 'cover',
 	showHUD: true,
+	showPrevNext: true,
 	showThumbnail: true,
 	showSettings: false,
 	showTitle: true,
@@ -48,6 +49,7 @@ class PornStart extends React.Component {
 			'toggleBackgroundSize',
 			'updateSource',
 			'updateImageTime',
+			'toggleShowPrevNext',
 			'toggleShowThumbnail',
 			'toggleShowTitle',
 			'toggleTrimTitle',
@@ -158,6 +160,14 @@ class PornStart extends React.Component {
 		if (submit) this.toggleSettings();
 	}
 
+	toggleShowPrevNext () {
+		this.setState({
+			showPrevNext: !this.state.showPrevNext
+		}, () => this.db.storeData('settings', {
+			showPrevNext: this.state.showPrevNext
+		}));
+	}
+
 	toggleShowThumbnail () {
 		this.setState({
 			showThumbnail: !this.state.showThumbnail
@@ -241,6 +251,14 @@ class PornStart extends React.Component {
 				update={this.updateImageTime}
 			/>;
 
+			let prevNextSwitch = <SwitchMDL
+				key="switch-prev-next"
+				id="switch-prev-next"
+				label="Show Prev/Next"
+				checked={this.state.showPrevNext}
+				toggle={this.toggleShowPrevNext}
+			/>;
+
 			let thumbnailSwitch = <SwitchMDL
 				key="switch-thumbnail"
 				id="switch-thumbnail"
@@ -268,7 +286,7 @@ class PornStart extends React.Component {
 			let settings = <ModalMDL
 				id="dialog"
 				show={this.state.showSettings}
-				children={[sourceTextfield, imageTimeTextfield, thumbnailSwitch, titleSwitch, trimTitleSwitch]}
+				children={[sourceTextfield, imageTimeTextfield, prevNextSwitch, thumbnailSwitch, titleSwitch, trimTitleSwitch]}
 				onSubmit={this.toggleSettings}
 			/>;
 
@@ -295,21 +313,21 @@ class PornStart extends React.Component {
 						clickHandler={this.toggleBackgroundSize}
 						/> : null;
 
-					let prev = <BufferNext
+					let prev = this.state.showPrevNext ? <BufferNext
 						data={this.state.porn[this.state.index.left]}
 						side="left"
 						theDarkness={THE_DARKNESS}
 						transitionTime={this.state.transitionTime * ONE_SECOND}
 						clickHandler={this.updateIndex.bind(this, false)}
-						/>;
+						/> : null;
 
-					let next = <BufferNext
+					let next = this.state.showPrevNext ? <BufferNext
 						data={this.state.porn[this.state.index.right]}
 						side="right"
 						theDarkness={THE_DARKNESS}
 						transitionTime={this.state.transitionTime * ONE_SECOND}
 						clickHandler={this.updateIndex.bind(this, true)}
-						/>;
+						/> : null;
 
 					let hud = <div className="hud">{settingsToggle}{settings}{title}{prev}{next}{bufferThumbnail}</div>;
 
@@ -328,14 +346,15 @@ class PornStart extends React.Component {
 					<div>
 						{settingsToggle}
 						{settings}
-						<div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
 					</div>
 				);
+// 						<div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
 			}
 		}
 		else {
-			return <div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-js-spinner is-active"></div>;
+			return <div/>;
 		}
+// 			return <div ref={spinner => spinner ? (componentHandler.upgradeElement(spinner)) : null} className="mdl-spinner mdl-js-spinner is-active"></div>;
 	}
 }
 
