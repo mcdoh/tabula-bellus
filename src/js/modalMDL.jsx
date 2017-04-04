@@ -19,13 +19,15 @@ class ModalMDL extends React.Component {
 // 			</div>
 // 		) : null;
 
+		let title = this.props.title ? <h3 className="mdl-dialog__title">Settings</h3> : null;
+
 		return (
 			<dialog
 				id={this.props.id}
 				ref={dialog => dialog ? (componentHandler.upgradeElement(dialog)) : null}
 				className="mdl-dialog settings-modal"
 				open={this.props.show}>
-				<h3 className="mdl-dialog__title">Settings</h3>
+				{title}
 				<div className="mdl-dialog__content">
 					{this.props.children}
 				</div>
@@ -38,7 +40,8 @@ ModalMDL.propTypes = {
 	id:       React.PropTypes.string,
 	children: React.PropTypes.arrayOf(React.PropTypes.element),
 	onSubmit: React.PropTypes.func.isRequired,
-	show:     React.PropTypes.bool.isRequired
+	show:     React.PropTypes.bool.isRequired,
+	title:    React.PropTypes.string
 };
 
 export default ModalMDL;
