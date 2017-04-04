@@ -35,37 +35,22 @@ export default class LocalDB {
 	}
 
 	onSuccess (event) {
-		console.debug(`Loaded ${ this.settings.db }`);
-
 		this.db = event.target.result;
-		console.debug('DB', this.db);
 		this.settings.ready();
 	}
 
 	onUpgradeNeeded (event) {
-		console.debug('Upgrading...');
-
 		this.db = event.target.result;
 		let tx = event.target.transaction;
 
 		forEach(this.settings.stores, store => {
-			if (tx.objectStoreNames.contains(store.name)) {
-				console.debug(' upgrading:', store.name);
-			}
-			else {
-				console.debug(' creating:', store.name);
-			}
-
 			let objectStore = tx.objectStoreNames.contains(store.name) ? tx.objectStore(store.name) :
 				this.db.createObjectStore(store.name, store.key);
 
 			forEach(store.indexes, index => objectStore.createIndex(index));
 
 			this.getData(objectStore, data => {
-				console.debug(' got data', data);
-
 				if (store.upgrade) {
-					console.debug(' data upgrade...');
 					this.storeData(objectStore, store.upgrade(data));
 				}
 			});
@@ -104,9 +89,7 @@ export default class LocalDB {
 				}
 			};
 
-			cursorReq.onerror = event => {
-				console.error('storeName', event);
-			};
+			cursorReq.onerror = this.onError;
 		}
 	}
 
@@ -115,16 +98,16 @@ export default class LocalDB {
 			store = typeof store === 'string' ? this.getObjectStore(store, READ_WRITE) : store;
 
 			forEach(data, (value, key) => {
-				console.debug(`putting ${ key }: ${ value }`);
 				let putReq = store.put(value, key);
 
-				putReq.onsuccess = event => {
-					console.debug(`GREAT SUCCESS! ${ key }: ${ value }`);
-				};
+// 				putReq.onsuccess = event => {
+// 					console.debug(`GREAT SUCCESS! ${ key }: ${ value }`);
+// 				};
 
-				putReq.onerror = event => {
-					console.error(`storeData ${ key }: ${ value }`, event.target.error);
-				};
+				putReq.onerror = this.onError;
+// 				putReq.onerror = event => {
+// 					console.error(`storeData ${ key }: ${ value }`, event.target.error);
+// 				};
 			});
 		}
 	}
