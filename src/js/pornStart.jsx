@@ -225,7 +225,7 @@ class PornStart extends React.Component {
 	}
 
 	render () {
-		if (notEmpty(this.state)) {
+		if (this.state && notEmpty(this.state.porn)) {
 			let settingsToggle = <button
 				ref={button => button ? (componentHandler.upgradeElement(button)) : null}
 				className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
