@@ -34,7 +34,7 @@ function urlTemplate (source) {
 	return `https://www.reddit.com/r/${ source }.json`;
 }
 
-class PornStart extends React.Component {
+class TabulaBellus extends React.Component {
 	constructor (props) {
 		super(props);
 
@@ -60,7 +60,7 @@ class PornStart extends React.Component {
 		].map(method => this[method] = this[method].bind(this));
 
 		this.db = new LocalDB({
-			db: 'pornStart',
+			db: 'tabulaBellus',
 			version: 1,
 			stores: [{
 				name: 'settings',
@@ -92,21 +92,21 @@ class PornStart extends React.Component {
 
 	parseData (data) {
 
-		let porn = data.data.children
+		let posts = data.data.children
 		.map(child => child.data)
 		.filter(child => child.post_hint && (child.post_hint === 'link' || child.post_hint === 'image') && !(child.is_self || child.locked || child.stickied));
 
-		if (porn.length) {
-			let i = rand(0, porn.length);
+		if (posts.length) {
+			let i = rand(0, posts.length);
 			let index = {
 				main: i,
-				left: decrement(i, porn),
-				right: increment(i, porn)
+				left: decrement(i, posts),
+				right: increment(i, posts)
 			};
 
 			this.setState({
 				index,
-				porn,
+				posts,
 				source: this.state.newSource
 			}, () => {
 				this.db.storeData('settings', {source: this.state.source});
@@ -193,8 +193,8 @@ class PornStart extends React.Component {
 	}
 
 	preloadThumbnails () {
-		let nextLeft = this.state.porn[decrement(this.state.index.left, this.state.porn)];
-		let nextRight = this.state.porn[increment(this.state.index.right, this.state.porn)];
+		let nextLeft = this.state.posts[decrement(this.state.index.left, this.state.posts)];
+		let nextRight = this.state.posts[increment(this.state.index.right, this.state.posts)];
 
 		loadImage(getThumbnailURL(nextLeft));
 		loadImage(getThumbnailURL(nextRight));
@@ -207,12 +207,12 @@ class PornStart extends React.Component {
 		if (increase) {
 			index.left = index.main;
 			index.main = index.right;
-			index.right = increment(index.right, this.state.porn);
+			index.right = increment(index.right, this.state.posts);
 		}
 		else {
 			index.right = index.main;
 			index.main = index.left;
-			index.left = decrement(index.left, this.state.porn);
+			index.left = decrement(index.left, this.state.posts);
 		}
 
 		this.setState({index});
@@ -225,7 +225,7 @@ class PornStart extends React.Component {
 	}
 
 	render () {
-		if (this.state && notEmpty(this.state.porn)) {
+		if (this.state && notEmpty(this.state.posts)) {
 			let settingsToggle = <button
 				ref={button => button ? (componentHandler.upgradeElement(button)) : null}
 				className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon settings-toggle"
@@ -290,31 +290,31 @@ class PornStart extends React.Component {
 				onSubmit={this.toggleSettings}
 			/>;
 
-			if (this.state.porn && this.state.index && this.state.porn[this.state.index.main]) {
+			if (this.state.posts && this.state.index && this.state.posts[this.state.index.main]) {
 
 				let bufferImage = <BufferImage
-					data={this.state.porn[this.state.index.main]}
+					data={this.state.posts[this.state.index.main]}
 					backgroundSize={this.state.backgroundSize}
 					transitionTime={this.state.transitionTime * ONE_SECOND}
 					onImageLoaded={this.setUpdateTimeout}
 					clickHandler={this.toggleHUD} />;
 
 				if (this.state.showHUD) {
-					let title = this.state.porn[this.state.index.main].title ? this.state.trimTitle ? this.state.porn[this.state.index.main].title.replace(TRIM_TITLE, '') :
-						this.state.porn[this.state.index.main].title :
+					let title = this.state.posts[this.state.index.main].title ? this.state.trimTitle ? this.state.posts[this.state.index.main].title.replace(TRIM_TITLE, '') :
+						this.state.posts[this.state.index.main].title :
 						'';
 
-					title = this.state.showTitle ? <h2 className="porn-start-title">{title}</h2> : null;
+					title = this.state.showTitle ? <h2 className="tabula-bellus-title">{title}</h2> : null;
 
 					let bufferThumbnail = this.state.showThumbnail ? <BufferThumbnail
-						data={this.state.porn[this.state.index.main]}
+						data={this.state.posts[this.state.index.main]}
 						theDarkness={THE_DARKNESS}
 						transitionTime={this.state.transitionTime * ONE_SECOND / 2}
 						clickHandler={this.toggleBackgroundSize}
 						/> : null;
 
 					let prev = this.state.showPrevNext ? <BufferNext
-						data={this.state.porn[this.state.index.left]}
+						data={this.state.posts[this.state.index.left]}
 						side="left"
 						theDarkness={THE_DARKNESS}
 						transitionTime={this.state.transitionTime * ONE_SECOND}
@@ -322,7 +322,7 @@ class PornStart extends React.Component {
 						/> : null;
 
 					let next = this.state.showPrevNext ? <BufferNext
-						data={this.state.porn[this.state.index.right]}
+						data={this.state.posts[this.state.index.right]}
 						side="right"
 						theDarkness={THE_DARKNESS}
 						transitionTime={this.state.transitionTime * ONE_SECOND}
@@ -358,11 +358,11 @@ class PornStart extends React.Component {
 	}
 }
 
-PornStart.propTypes = {
+TabulaBellus.propTypes = {
 	source:         React.PropTypes.string,
 	backgroundSize: React.PropTypes.string,
 	showHUD:        React.PropTypes.bool,
 	trimTitle:      React.PropTypes.bool
 };
 
-export default PornStart;
+export default TabulaBellus;

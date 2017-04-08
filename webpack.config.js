@@ -4,10 +4,10 @@ let webpack = require('webpack');
 let PROD = JSON.parse(process.env.PROD_ENV || 0);
 
 module.exports = {
-	entry: path.join(__dirname, 'src', 'js', 'pornStart.js'),
+	entry: path.join(__dirname, 'src', 'js', 'tabulaBellus.js'),
 	output: {
 		path: path.join(__dirname, 'build'),
-		filename: 'pornStart.js'
+		filename: 'tabulaBellus.js'
 	},
 	plugins: PROD ? [
 		new webpack.DefinePlugin({

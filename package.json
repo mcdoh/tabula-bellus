@@ -1,8 +1,8 @@
 {
-  "name": "pornstart",
+  "name": "tabula-bellus",
   "version": "1.0.0",
   "description": "Load r/earthporn as Chrome's new tab background.",
-  "main": "pornStart.html",
+  "main": "tabulabellus.html",
   "eslintConfig": {
     "env": {
       "browser": true,
