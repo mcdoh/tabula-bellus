@@ -290,7 +290,7 @@ class PornStart extends React.Component {
 				onSubmit={this.toggleSettings}
 			/>;
 
-			if (this.state.porn && this.state.index) {
+			if (this.state.porn && this.state.index && this.state.porn[this.state.index.main]) {
 
 				let bufferImage = <BufferImage
 					data={this.state.porn[this.state.index.main]}
